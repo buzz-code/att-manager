@@ -4,6 +4,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import SupervisedUserCircleIcon from '@material-ui/icons/SupervisedUserCircle';
 import ListIcon from '@material-ui/icons/List';
 import GroupIcon from '@material-ui/icons/Group';
+import TodayIcon from '@material-ui/icons/Today';
 import ChatIcon from '@material-ui/icons/Chat';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import GroupAddIcon from '@material-ui/icons/GroupAdd';
@@ -25,6 +26,7 @@ import Lessons from '../containers/lessons/LessonsContainer';
 import Klasses from '../containers/klasses/KlassesContainer';
 import StudentKlasses from '../containers/student-klasses/StudentKlassesContainer';
 import Groups from '../containers/groups/GroupsContainer';
+import Diaries from '../containers/diaries/DiariesContainer';
 import AttTypes from '../containers/att-types/AttTypesContainer';
 import KlassTypes from '../containers/klass-types/KlassTypesContainer';
 import AttReports from '../containers/att-reports/AttReportsContainer';
@@ -83,6 +85,13 @@ export default [
       icon: GroupAddIcon,
       title: titles.GROUPS,
       props: { entity: entities.GROUPS, title: titles.GROUPS },
+    },
+    {
+      path: '/diaries',
+      component: Diaries,
+      icon: TodayIcon,
+      title: titles.DIARIES,
+      props: { entity: entities.DIARIES, title: titles.DIARIES },
     },
     {
       path: '/att-types',
