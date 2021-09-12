@@ -12,7 +12,7 @@ const getColumns = ({ klassTypes }) => [
 ];
 const getFilters = ({ klassTypes }) => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
-  { field: 'name', label: 'שם', type: 'text', operator: 'like' },
+  { field: 'teachers.name', label: 'שם', type: 'text', operator: 'like' },
   { field: 'klass_types.name', label: 'סוג כיתה', type: 'list', operator: 'like', list: klassTypes, idField: 'id' },
 ];
 
