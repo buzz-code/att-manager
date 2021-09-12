@@ -107,13 +107,13 @@ export default [
       title: titles.KLASS_TYPES,
       props: { entity: entities.KLASS_TYPES, title: titles.KLASS_TYPES },
     },
-    {
-      path: '/att-reports',
-      component: AttReports,
-      icon: AssignmentTurnedInIcon,
-      title: titles.ATT_REPORTS,
-      props: { entity: entities.ATT_REPORTS, title: titles.ATT_REPORTS },
-    },
+    // {
+    //   path: '/att-reports',
+    //   component: AttReports,
+    //   icon: AssignmentTurnedInIcon,
+    //   title: titles.ATT_REPORTS,
+    //   props: { entity: entities.ATT_REPORTS, title: titles.ATT_REPORTS },
+    // },
   ],
   [
     { path: '/excel-import', component: ExcelImport, icon: FileCopyIcon, title: 'העלאת קבצים' },
