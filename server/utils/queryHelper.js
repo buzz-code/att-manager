@@ -37,7 +37,7 @@ export function getStudentsByUserIdAndKlassId(user_id, klass_id) {
         .then(res => res.map(item => item.student));
 }
 
-export function getAttTypesByUserId(user_id) {
+export function getAttTypesForTeacherByUserId(user_id) {
     return new AttType().where({ user_id, is_active: true, is_for_teacher: true })
         .fetchAll()
         .then(res => res.toJSON());

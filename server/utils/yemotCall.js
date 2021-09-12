@@ -120,7 +120,7 @@ export class YemotCall extends CallBase {
 
     async getStudentReports(klass) {
         const students = await queryHelper.getStudentsByUserIdAndKlassId(this.user.id, klass.id);
-        const types = await queryHelper.getAttTypesByUserId(this.user.id);
+        const types = await queryHelper.getAttTypesForTeacherByUserId(this.user.id);
         const attTypeMessage = types.map(item => format(this.texts.forAttendanceTypeXPressY, item.name, item.key)).join(', ');
         const prevStudentMessage = format(this.texts.forAttendanceTypeXPressY, this.texts.prevStudent, 7);
 
