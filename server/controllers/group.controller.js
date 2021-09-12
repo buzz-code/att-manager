@@ -6,6 +6,7 @@ import Lesson from '../models/lesson.model';
 import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import { getListFromTable } from '../../common-modules/server/utils/common';
 import { getDiaryStream, getDiaryMergedPdfStream } from '../utils/printHelper';
+import { getDiaryDataByGroupId, getAllAttTypesByUserId } from '../utils/queryHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Group);
@@ -85,4 +86,21 @@ export async function printAllDiaries(req, res) {
     }
     const { fileStream, filename } = await getDiaryMergedPdfStream(data, diaryDate);
     downloadFileFromStream(fileStream, filename, 'pdf', res);
+}
+
+/**
+ * Get Diary Data
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+export async function getDiaryData(req, res) {
+    const { body: { id } } = req;
+    const groupData = await getDiaryDataByGroupId(id);
+    const attTypes = await getAllAttTypesByUserId(req.currentUser.id);
+    res.json({
+        error: null,
+        data: { groupData, attTypes }
+    });
 }
