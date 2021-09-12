@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import Table from '../../../common-modules/client/components/table/Table';
 
 const getColumns = () => [
+  { field: 'student_tz', title: 'מספר תז' },
   { field: 'student_name', title: 'תלמידה' },
   { field: 'klasses_1', title: 'בסיס' },
   { field: 'klasses_2', title: 'התמחות' },
