@@ -24,12 +24,15 @@ const useStyles = makeStyles((theme) => ({
             fontWeight: 500,
             lineHeight: '1.5rem',
             padding: theme.spacing(2),
+            textAlign: 'left',
+        },
+        '& td': {
+            padding: theme.spacing(2),
         },
     },
     inputField: {
-        margin: theme.spacing(1),
         display: 'inline-flex',
-        width: 80,
+        width: 100,
     },
     buttonContainer: {
         display: 'flex',
