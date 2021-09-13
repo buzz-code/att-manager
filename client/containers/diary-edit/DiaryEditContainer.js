@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -21,15 +21,17 @@ const DiaryEditContainer = ({ entity }) => {
     dispatch(crudAction.customHttpRequest(entity, 'POST', 'get-diary-data', { groupId: Number(groupId) }));
   }, [dispatch, entity, groupId]);
 
+  const isDiaryDataValid = useMemo(() => diaryData && diaryData.groupData.group.id == groupId, [diaryData, groupId]);
+
   return (
     <div>
-      <h2 style={{ paddingBottom: '15px' }}>{title} {diaryData && <>
+      <h2 style={{ paddingBottom: '15px' }}>{title} {isDiaryDataValid && <>
         {diaryData.groupData.group.klass?.name} {diaryData.groupData.group.teacher?.name} {diaryData.groupData.group.lesson?.name}
       </>}</h2>
 
       {isLoading && <CircularProgress size={36} />}
 
-      {diaryData && diaryData.groupData.group.id == groupId && <DiaryTable diaryData={diaryData} title={title} />}
+      {isDiaryDataValid && <DiaryTable diaryData={diaryData} title={title} />}
     </div>
   );
 };

@@ -6,7 +6,6 @@ import StudentAttCell from './StudentAttCell';
 const useStyles = makeStyles((theme) => ({
     container: {
         marginBottom: theme.spacing(2),
-        padding: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
         background: theme.palette.background.paper,
         boxShadow: theme.shadows[2],

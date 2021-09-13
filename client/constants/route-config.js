@@ -112,8 +112,7 @@ export default [
       path: '/diary-edit/:groupId/:diaryId?',
       hideFromDrawer: true,
       component: DiaryEdit,
-      title: titles.GROUPS,
-      props: { entity: entities.GROUPS },
+      props: { entity: entities.DIARIES },
     },
   ],
   [

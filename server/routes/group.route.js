@@ -17,11 +17,6 @@ const router = genericRoute(groupCtrl, router => {
             await groupCtrl.printAllDiaries(req, res);
         });
 
-    router.route('/get-diary-data')
-        .post(async (req, res) => {
-            await groupCtrl.getDiaryData(req, res);
-        });
-
 });
 
 export default router;

@@ -1,6 +1,7 @@
 import Diary from '../models/diary.model';
 import genericController, { applyFilters, fetchPage } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
+import { getDiaryDataByGroupId, getAllAttTypesByUserId } from '../utils/queryHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -29,4 +30,21 @@ function getFindAllQuery(user_id, filters) {
 export async function findAll(req, res) {
     const dbQuery = getFindAllQuery(req.currentUser.id, req.query.filters);
     fetchPage({ dbQuery }, req.query, res);
+}
+
+/**
+ * Get Diary Data
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+ export async function getDiaryData(req, res) {
+    const { body: { groupId } } = req;
+    const groupData = await getDiaryDataByGroupId(groupId);
+    const attTypes = await getAllAttTypesByUserId(req.currentUser.id);
+    res.json({
+        error: null,
+        data: { groupData, attTypes }
+    });
 }
