@@ -39,10 +39,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DiaryTableContainer = ({ diaryData, title }) => {
+const DiaryTable = ({ diaryData }) => {
     const classes = useStyles();
 
-    const diaryTitle = React.useMemo(() => `${title} ${diaryData.groupData.group.klass?.name} ${diaryData.groupData.group.teacher?.name} ${diaryData.groupData.group.lesson?.name}`, [title, diaryData]);
     const lessons = React.useMemo(() => [...Array(diaryData.groupData.group.lesson_count)]
         .map((_, index) => `lesson_date_${index + 1}`),
         [diaryData.groupData.group.lesson_count]);
@@ -63,7 +62,6 @@ const DiaryTableContainer = ({ diaryData, title }) => {
     }, [setData]);
 
     return <>
-        {diaryTitle}
         <div className={classes.container}>
             <table className={classes.table}>
                 <thead>
@@ -95,4 +93,4 @@ const DiaryTableContainer = ({ diaryData, title }) => {
     </>;
 }
 
-export default DiaryTableContainer;
+export default DiaryTable;

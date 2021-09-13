@@ -96,8 +96,8 @@ export async function printAllDiaries(req, res) {
  * @returns {*}
  */
 export async function getDiaryData(req, res) {
-    const { body: { id } } = req;
-    const groupData = await getDiaryDataByGroupId(id);
+    const { body: { groupId } } = req;
+    const groupData = await getDiaryDataByGroupId(groupId);
     const attTypes = await getAllAttTypesByUserId(req.currentUser.id);
     res.json({
         error: null,

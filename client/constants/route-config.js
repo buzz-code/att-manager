@@ -34,6 +34,7 @@ import StudentKlassesKlassType from '../containers/student-klasses-klass-type/St
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
 import ExcelImport from '../containers/excel-import/ExcelImportContainer';
+import DiaryEdit from '../containers/diary-edit/DiaryEditContainer';
 
 export default [
   [
@@ -107,13 +108,13 @@ export default [
       title: titles.KLASS_TYPES,
       props: { entity: entities.KLASS_TYPES, title: titles.KLASS_TYPES },
     },
-    // {
-    //   path: '/att-reports',
-    //   component: AttReports,
-    //   icon: AssignmentTurnedInIcon,
-    //   title: titles.ATT_REPORTS,
-    //   props: { entity: entities.ATT_REPORTS, title: titles.ATT_REPORTS },
-    // },
+    {
+      path: '/diary-edit/:groupId/:diaryId?',
+      hideFromDrawer: true,
+      component: DiaryEdit,
+      title: titles.GROUPS,
+      props: { entity: entities.GROUPS },
+    },
   ],
   [
     { path: '/excel-import', component: ExcelImport, icon: FileCopyIcon, title: 'העלאת קבצים' },
