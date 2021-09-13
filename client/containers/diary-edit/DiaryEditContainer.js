@@ -29,7 +29,7 @@ const DiaryEditContainer = ({ entity }) => {
 
       {isLoading && <CircularProgress size={36} />}
 
-      {diaryData && <DiaryTable diaryData={diaryData} title={title} />}
+      {diaryData && diaryData.groupData.group.id == groupId && <DiaryTable diaryData={diaryData} title={title} />}
     </div>
   );
 };

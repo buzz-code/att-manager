@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from '@material-ui/core/Button';
+import { useHistory } from 'react-router';
 
 import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
@@ -19,7 +19,7 @@ const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'lesson_count', label: 'מספר שיעורים', type: 'number', operator: 'like' },
   { field: 'diary_date', label: 'תאריך', type: 'date', operator: null },
 ];
-const getActions = (handlePrintAll, handlePrintOne) => [
+const getActions = (handlePrintAll, handlePrintOne, handleOpenDiary) => [
   {
     icon: 'print',
     tooltip: 'הדפס הכל',
@@ -32,9 +32,16 @@ const getActions = (handlePrintAll, handlePrintOne) => [
     tooltip: 'הדפס יומן',
     onClick: handlePrintOne,
   }),
+  rowData => ({
+    disabled: !rowData.klass_id,
+    icon: 'today',
+    tooltip: 'מלא יומן',
+    onClick: handleOpenDiary,
+  }),
 ];
 
 const GroupsContainer = ({ entity, title }) => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const {
     GET: { 'get-edit-data': editData },
@@ -48,16 +55,21 @@ const GroupsContainer = ({ entity, title }) => {
   const handlePrintOne = useCallback((e, rowData) => {
     dispatch(crudAction.download(entity, 'POST', 'print-one-diary', { id: rowData.id, diaryDate: conditions[4]?.value }));
   }, [entity, conditions]);
+  const handleOpenDiary = useCallback((e, rowData) => {
+    history.push('/diary-edit/' + rowData.id);
+  }, []);
 
   const columns = useMemo(() => getColumns(editData || {}), [editData]);
   const filters = useMemo(() => getFilters(editData || {}), [editData]);
-  const actions = useMemo(() => getActions(handlePrintAll, handlePrintOne), [handlePrintAll, handlePrintOne]);
+  const actions = useMemo(() => getActions(handlePrintAll, handlePrintOne, handleOpenDiary), [handlePrintAll, handlePrintOne, handleOpenDiary]);
 
   useEffect(() => {
     dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data'));
   }, []);
 
-  return <Table entity={entity} title={title} columns={columns} filters={filters} additionalActions={actions} disableAdd={true} disableUpdate={true} disableDelete={true} onConditionUpdate={setConditions} />;
+  return <>
+    <Table entity={entity} title={title} columns={columns} filters={filters} additionalActions={actions} disableAdd={true} disableUpdate={true} disableDelete={true} onConditionUpdate={setConditions} />
+  </>;
 };
 
 export default GroupsContainer;
