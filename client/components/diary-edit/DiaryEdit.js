@@ -5,6 +5,8 @@ import * as crudAction from '../../../common-modules/client/actions/crudAction';
 
 import DiaryTableContainer from './DiaryTableContainer';
 
+const title = 'יומן נוכחות';
+
 const DiaryEdit = ({ group, entity }) => {
   const dispatch = useDispatch();
   const {
@@ -19,7 +21,7 @@ const DiaryEdit = ({ group, entity }) => {
     <div>
       <h2 style={{ paddingBottom: '15px' }}>עריכת יומנים</h2>
 
-      {diaryData && <DiaryTableContainer diaryData={diaryData} />}
+      {diaryData && <DiaryTableContainer diaryData={diaryData} title={title} />}
 
       <pre dir='ltr'>{JSON.stringify({ diaryData }, null, '  ')}</pre>
     </div>

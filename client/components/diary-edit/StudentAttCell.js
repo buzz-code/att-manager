@@ -1,29 +1,18 @@
-import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import React, { useCallback } from 'react';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 
-const useStyles = makeStyles((theme) => ({
-    inputField: {
-        margin: theme.spacing(1),
-        display: 'inline-flex',
-        width: 100,
-    },
-}));
-
-const StudentAttCell = ({ value: initialValue, row: { index }, column: { id }, updateMyData, attTypes }) => {
-    const classes = useStyles();
-
+const StudentAttCell = ({ value: initialValue, index, columnId, updateMyData, attTypes, className }) => {
     // We need to keep and update the state of the cell normally
     const [value, setValue] = React.useState(initialValue)
 
-    const onChange = (e, val) => {
+    const onChange = useCallback((e, val) => {
         setValue(val && val.key)
-    }
+    }, [setValue]);
 
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
-        updateMyData(index, id, value)
+        updateMyData(index, columnId, value)
     }
 
     // If the initialValue is changed external, sync it up with our state
@@ -33,7 +22,7 @@ const StudentAttCell = ({ value: initialValue, row: { index }, column: { id }, u
 
     return <Autocomplete
         size="small"
-        className={classes.inputField}
+        className={className}
         options={attTypes || []}
         getOptionLabel={(option) => option.name}
         getOptionSelected={(option, value) => option.key == value}
