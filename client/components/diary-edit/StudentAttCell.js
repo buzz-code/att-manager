@@ -2,30 +2,16 @@ import React, { useCallback } from 'react';
 // import Autocomplete from '@material-ui/lab/Autocomplete';
 import Select from '@material-ui/core/Select';
 
-const StudentAttCell = ({ value: initialValue, index, columnId, updateMyData, attTypes, className }) => {
-    // We need to keep and update the state of the cell normally
-    const [value, setValue] = React.useState(initialValue)
-
-    const onChange = useCallback((e, val) => {
-        setValue(val && val.key)
-    }, [setValue]);
-
-    // We'll only update the external data when the input is blurred
-    const onBlur = () => {
-        updateMyData(index, columnId, value)
-    }
-
-    // If the initialValue is changed external, sync it up with our state
-    React.useEffect(() => {
-        setValue(initialValue)
-    }, [initialValue])
+const StudentAttCell = ({ value, index, columnId, updateMyData, attTypes, className }) => {
+    const onChange = useCallback((e) => {
+        updateMyData(index, columnId, e.target.value)
+    }, [updateMyData, index, columnId]);
 
     return <Select
         native
         className={className}
         value={value}
         onChange={onChange}
-        onBlur={onBlur}
     >
         <SelectOptions list={attTypes} />
     </Select>
