@@ -22,6 +22,7 @@ const StudentAttCell = ({ value: initialValue, index, columnId, updateMyData, at
 
     return <Select
         native
+        className={className}
         value={value}
         onChange={onChange}
         onBlur={onBlur}

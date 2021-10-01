@@ -23,12 +23,20 @@ const useStyles = makeStyles((theme) => ({
         '& th': {
             fontWeight: 500,
             lineHeight: '1.5rem',
-            padding: theme.spacing(2),
+            padding: theme.spacing(1),
             textAlign: 'left',
         },
         '& td': {
-            padding: theme.spacing(2),
+            padding: theme.spacing(1),
         },
+    },
+    dateField: {
+        '& .selectedDate': {
+            maxWidth: 100,
+            fontSize: 10,
+            lineHeight: '1rem',
+            minHeight: theme.spacing(2)
+        }
     },
     inputField: {
         display: 'inline-flex',
@@ -87,8 +95,7 @@ const TableHeader = React.memo(({ lessons, dates, updateDates, classes }) => {
             <th>שם התלמידה</th>
             {lessons.map((item, index) => (
                 <th key={item}>
-                    {'תאריך ' + (index + 1)}
-                    {/* <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'תאריך ' + (index + 1)} className={classes.inputField} /> */}
+                    <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'שיעור ' + (index + 1)} className={classes.dateField} />
                 </th>
             ))}
         </tr>
