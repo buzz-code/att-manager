@@ -1,7 +1,9 @@
+import HttpStatus from 'http-status-codes';
 import Diary from '../models/diary.model';
 import genericController, { applyFilters, fetchPage } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId } from '../utils/queryHelper';
+import { processAndValidateData, saveData } from '../utils/diaryHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -39,12 +41,30 @@ export async function findAll(req, res) {
  * @param {object} res
  * @returns {*}
  */
- export async function getDiaryData(req, res) {
+export async function getDiaryData(req, res) {
     const { body: { groupId } } = req;
     const groupData = await getDiaryDataByGroupId(groupId);
     const attTypes = await getAllAttTypesByUserId(req.currentUser.id);
     res.json({
         error: null,
         data: { groupData, attTypes }
+    });
+}
+
+export async function saveDiaryData(req, res) {
+    const { body: { groupId, data, dates, lessons } } = req;
+
+    try {
+        const dataToSave = processAndValidateData(req.currentUser.id, data, dates, lessons);
+        await saveData(req.currentUser.id, groupId, dataToSave);
+    } catch (e) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: e.message,
+        });
+    }
+    
+    res.json({
+        error: null,
+        data: { message: 'הרשומה נשמרה בהצלחה.' }
     });
 }

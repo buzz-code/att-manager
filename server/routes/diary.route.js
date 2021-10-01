@@ -6,6 +6,11 @@ const router = genericRoute(diaryCtrl, router => {
         .post(async (req, res) => {
             await diaryCtrl.getDiaryData(req, res);
         });
+
+    router.route('/save-diary-data')
+        .post(async (req, res) => {
+            await diaryCtrl.saveDiaryData(req, res);
+        });
 });
 
 export default router;

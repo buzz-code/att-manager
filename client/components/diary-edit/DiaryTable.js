@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 
 import StudentAttCell from './StudentAttCell';
 import DiaryDateCell from './DiaryDateCell';
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DiaryTable = ({ diaryData }) => {
+const DiaryTable = ({ diaryData, handleSave }) => {
     const classes = useStyles();
 
     const lessons = React.useMemo(() => [...Array(diaryData.groupData.group.lesson_count)]
@@ -72,8 +73,18 @@ const DiaryTable = ({ diaryData }) => {
     const updateDates = React.useCallback((columnId, value) => {
         setDates(old => ({ ...old, [columnId]: value }));
     }, [setDates]);
+    const saveData = () => {
+        handleSave(data, dates, lessons);
+    }
 
     return <>
+        <div className={classes.buttonContainer} style={{ marginBottom: 16 }}>
+            <div style={{ flex: '1' }}> </div>
+            <Button variant="contained" color="primary" onClick={saveData}>
+                שמור
+            </Button>
+        </div>
+
         <div className={classes.container}>
             <table className={classes.table}>
                 <TableHeader lessons={lessons} dates={dates} updateDates={updateDates} classes={classes} />
@@ -83,6 +94,13 @@ const DiaryTable = ({ diaryData }) => {
                     ))}
                 </tbody>
             </table>
+        </div>
+
+        <div className={classes.buttonContainer} style={{ marginTop: 16 }}>
+            <div style={{ flex: '1' }}> </div>
+            <Button variant="contained" color="primary" onClick={saveData}>
+                שמור
+            </Button>
         </div>
     </>;
 }

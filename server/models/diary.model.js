@@ -30,3 +30,6 @@ class Diary extends bookshelf.Model {
 }
 
 export default Diary;
+
+export const DiaryLesson = bookshelf.model('DiaryLesson', { tableName: 'diary_lessons' })
+export const DiaryInstance = bookshelf.model('DiaryInstance', { tableName: 'diary_instances' });
