@@ -31,7 +31,13 @@ function getFindAllQuery(user_id, filters) {
  */
 export async function findAll(req, res) {
     const dbQuery = getFindAllQuery(req.currentUser.id, req.query.filters);
-    fetchPage({ dbQuery }, req.query, res);
+    const countQuery = dbQuery.clone().query(qb => { qb.clearSelect(); qb.clearGroup(); }).count();
+    dbQuery.query(qb => {
+        qb.groupBy('diaries.id')
+        qb.leftJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
+        qb.min({ first_lesson: 'diary_lessons.lesson_date' })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
 }
 
 /**
@@ -62,7 +68,7 @@ export async function saveDiaryData(req, res) {
             error: e.message,
         });
     }
-    
+
     res.json({
         error: null,
         data: { message: 'הרשומה נשמרה בהצלחה.' }
