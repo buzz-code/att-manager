@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import TextField from '@material-ui/core/TextField';
+// import Autocomplete from '@material-ui/lab/Autocomplete';
+import Select from '@material-ui/core/Select';
 
 const StudentAttCell = ({ value: initialValue, index, columnId, updateMyData, attTypes, className }) => {
     // We need to keep and update the state of the cell normally
@@ -20,20 +20,38 @@ const StudentAttCell = ({ value: initialValue, index, columnId, updateMyData, at
         setValue(initialValue)
     }, [initialValue])
 
-    return <Autocomplete
-        size="small"
-        className={className}
-        options={attTypes || []}
-        getOptionLabel={(option) => option.name}
-        getOptionSelected={(option, value) => option.key == value}
+    return <Select
+        native
         value={value}
-        renderInput={(params) => {
-            return <TextField {...params} fullWidth />;
-        }}
         onChange={onChange}
         onBlur={onBlur}
-    />
-
+    >
+        <SelectOptions list={attTypes} />
+    </Select>
+    // return <Autocomplete
+    //     size="small"
+    //     className={className}
+    //     options={attTypes || []}
+    //     getOptionLabel={(option) => option.name}
+    //     getOptionSelected={(option, value) => option.key == value}
+    //     value={value}
+    //     renderInput={(params) => {
+    //         return <TextField {...params} fullWidth />;
+    //     }}
+    //     onChange={onChange}
+    //     onBlur={onBlur}
+    // />
 }
 
-export default StudentAttCell;
+const SelectOptions = React.memo(({ list }) => {
+    return <>
+        <option value='' />
+        {list.map((item, i) => (
+            <option key={i} value={item.key}>
+                {item.name}
+            </option>
+        ))}
+    </>
+})
+
+export default React.memo(StudentAttCell);

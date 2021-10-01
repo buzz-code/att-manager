@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import StudentAttCell from './StudentAttCell';
+import DiaryDateCell from './DiaryDateCell';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -45,6 +46,7 @@ const DiaryTable = ({ diaryData }) => {
         .map((_, index) => `lesson_date_${index + 1}`),
         [diaryData.groupData.group.lesson_count]);
     const [data, setData] = React.useState(diaryData.groupData.students);
+    const [dates, setDates] = React.useState({});
 
     const updateMyData = React.useCallback((rowIndex, columnId, value) => {
         setData(old =>
@@ -59,32 +61,17 @@ const DiaryTable = ({ diaryData }) => {
             })
         )
     }, [setData]);
+    const updateDates = React.useCallback((columnId, value) => {
+        setDates(old => ({ ...old, [columnId]: value }));
+    }, [setDates]);
 
     return <>
         <div className={classes.container}>
             <table className={classes.table}>
-                <thead>
-                    <tr className={classes.tableRow}>
-                        <th> </th>
-                        <th>תז</th>
-                        <th>שם התלמידה</th>
-                        {lessons.map((_, index) => (
-                            <th key={index}>תאריך {index + 1}</th>
-                        ))}
-                    </tr>
-                </thead>
+                <TableHeader lessons={lessons} dates={dates} updateDates={updateDates} classes={classes} />
                 <tbody>
-                    {diaryData.groupData.students.map((item, index) => (
-                        <tr key={item.tz} className={classes.tableRow}>
-                            <td>{index + 1}</td>
-                            <td>{item.tz}</td>
-                            <td>{item.name}</td>
-                            {lessons.map((item) => (
-                                <td>
-                                    <StudentAttCell key={index + item} index={index} columnId={item} updateMyData={updateMyData} value={data[item]} attTypes={diaryData.attTypes} className={classes.inputField} />
-                                </td>
-                            ))}
-                        </tr>
+                    {data.map((item, index) => (
+                        <TableRow key={item.tz} item={item} index={index} lessons={lessons} attTypes={diaryData.attTypes} updateMyData={updateMyData} classes={classes} />
                     ))}
                 </tbody>
             </table>
@@ -92,4 +79,34 @@ const DiaryTable = ({ diaryData }) => {
     </>;
 }
 
-export default DiaryTable;
+const TableHeader = React.memo(({ lessons, dates, updateDates, classes }) => {
+    return <thead>
+        <tr className={classes.tableRow}>
+            <th> </th>
+            <th>תז</th>
+            <th>שם התלמידה</th>
+            {lessons.map((item, index) => (
+                <th key={item}>
+                    {'תאריך ' + (index + 1)}
+                    {/* <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'תאריך ' + (index + 1)} className={classes.inputField} /> */}
+                </th>
+            ))}
+        </tr>
+    </thead>
+});
+
+const TableRow = React.memo(({ item, index, lessons, attTypes, updateMyData, classes }) => {
+    return <tr className={classes.tableRow}>
+        <td>{index + 1}</td>
+        <td>{item.tz}</td>
+        <td>{item.name}</td>
+        {lessons.map((lesson) => (
+            <td key={index + lesson}>
+                <StudentAttCell index={index} columnId={lesson} updateMyData={updateMyData} value={item[lesson]} attTypes={attTypes} className={classes.inputField} />
+            </td>
+        ))}
+    </tr>
+
+});
+
+export default React.memo(DiaryTable);
