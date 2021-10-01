@@ -5,6 +5,7 @@ import User from "../models/user.model";
 import StudentKlass from "../models/student-klass.model";
 import Lesson from "../models/lesson.model";
 import Group from "../models/group.model";
+import Diary from "../models/diary.model";
 
 export function getUserByPhone(phone_number) {
     return new User().where({ phone_number })
@@ -56,4 +57,15 @@ export async function getDiaryDataByGroupId(group_id) {
     const students = await getStudentsByUserIdAndKlassId(group.user_id, group.klass_id);
 
     return { group, students: students.sort((a, b) => a.name.localeCompare(b.name)) };
+}
+
+export function getDiaryDataByDiaryId(diary_id) {
+    return new Diary().where({ 'diaries.id': diary_id })
+        .query(qb => {
+            qb.leftJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
+            qb.leftJoin('diary_instances', 'diary_instances.diary_lesson_id', 'diary_lessons.id')
+            qb.select('lesson_key', 'lesson_date', 'student_tz', 'student_att_key')
+        })
+        .fetchAll()
+        .then(res => res.toJSON());
 }

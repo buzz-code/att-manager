@@ -45,3 +45,13 @@ export const saveData = async (user_id, group_id, dataToSave) => {
 
     await bookshelf.knex(new DiaryInstance().tableName).insert(instances);
 }
+
+export function fillDiaryData(diaryData, groupData) {
+    groupData.dates = Object.fromEntries(diaryData.map(({ lesson_key, lesson_date }) => ([lesson_key, lesson_date])));
+
+    const studentDict = {};
+    groupData.students.forEach(student => studentDict[student.tz] = student);
+    for (const diaryInstance of diaryData) {
+        studentDict[diaryInstance.student_tz][diaryInstance.lesson_key] = diaryInstance.student_att_key || '';
+    }
+}

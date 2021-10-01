@@ -8,6 +8,10 @@ const DiaryDateCell = ({ value, columnId, updateMyData, label, className }) => {
         updateMyData(columnId, date);
     }, [updateMyData, columnId]);
 
+    if (typeof (value) == 'string') {
+        value = new Date(value);
+    }
+    
     return <>
         {label}
         <ReactJewishDatePicker

@@ -2,8 +2,8 @@ import HttpStatus from 'http-status-codes';
 import Diary from '../models/diary.model';
 import genericController, { applyFilters, fetchPage } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
-import { getDiaryDataByGroupId, getAllAttTypesByUserId } from '../utils/queryHelper';
-import { processAndValidateData, saveData } from '../utils/diaryHelper';
+import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
+import { fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -48,9 +48,13 @@ export async function findAll(req, res) {
  * @returns {*}
  */
 export async function getDiaryData(req, res) {
-    const { body: { groupId } } = req;
+    const { body: { groupId, diaryId } } = req;
     const groupData = await getDiaryDataByGroupId(groupId);
     const attTypes = await getAllAttTypesByUserId(req.currentUser.id);
+    if (diaryId) {
+        const diaryData = await getDiaryDataByDiaryId(diaryId);
+        fillDiaryData(diaryData, groupData);
+    }
     res.json({
         error: null,
         data: { groupData, attTypes }

@@ -19,7 +19,7 @@ const DiaryEditContainer = ({ entity }) => {
   } = useSelector((state) => state[entity]);
 
   useEffect(() => {
-    dispatch(crudAction.customHttpRequest(entity, 'POST', 'get-diary-data', { groupId: Number(groupId) }));
+    dispatch(crudAction.customHttpRequest(entity, 'POST', 'get-diary-data', { groupId: Number(groupId), diaryId: Number(diaryId) }));
   }, [dispatch, entity, groupId]);
 
   const isDiaryDataValid = useMemo(() => diaryData && diaryData.groupData.group.id == groupId, [diaryData, groupId]);

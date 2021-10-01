@@ -55,7 +55,7 @@ const DiaryTable = ({ diaryData, handleSave }) => {
         .map((_, index) => `lesson_date_${index + 1}`),
         [diaryData.groupData.group.lesson_count]);
     const [data, setData] = React.useState(diaryData.groupData.students);
-    const [dates, setDates] = React.useState({});
+    const [dates, setDates] = React.useState(diaryData.groupData.dates || {});
 
     const updateMyData = React.useCallback((rowIndex, columnId, value) => {
         setData(old =>
