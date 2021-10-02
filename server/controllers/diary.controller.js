@@ -52,6 +52,7 @@ export async function getDiaryData(req, res) {
     const groupData = await getDiaryDataByGroupId(groupId);
     const attTypes = await getAllAttTypesByUserId(req.currentUser.id);
     if (diaryId) {
+        groupData.diaryId = diaryId;
         const diaryData = await getDiaryDataByDiaryId(diaryId);
         fillDiaryData(diaryData, groupData);
     }
@@ -62,11 +63,11 @@ export async function getDiaryData(req, res) {
 }
 
 export async function saveDiaryData(req, res) {
-    const { body: { groupId, data, dates, lessons } } = req;
+    const { body: { groupId, diaryId, data, dates, lessons } } = req;
 
     try {
         const dataToSave = processAndValidateData(req.currentUser.id, data, dates, lessons);
-        await saveData(req.currentUser.id, groupId, dataToSave);
+        await saveData(req.currentUser.id, groupId, diaryId, dataToSave);
     } catch (e) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             error: e.message,

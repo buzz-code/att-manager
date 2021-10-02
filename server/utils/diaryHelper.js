@@ -22,7 +22,7 @@ export const processAndValidateData = (user_id, data, dates, lessons) => {
             diaryLessons[lesson].students.push({
                 user_id,
                 student_tz: student.tz,
-                student_att_key: student[lesson]
+                student_att_key: student[lesson] || null,
             })
         }
     }
@@ -30,8 +30,25 @@ export const processAndValidateData = (user_id, data, dates, lessons) => {
     return Object.values(diaryLessons);
 }
 
-export const saveData = async (user_id, group_id, dataToSave) => {
-    const { id: diary_id } = await new Diary({ user_id, group_id }).save();
+async function deleteAllDiaryLessonsAndInstances(diary_id) {
+    const diaryLessons = await new DiaryLesson()
+        .where({ diary_id })
+        .query({ select: ['id'] })
+        .fetchAll()
+        .then(res => res.toJSON())
+        .then(res => res.map(item => item.id));
+
+    await new DiaryLesson().query(qb => qb.where('id', 'in', diaryLessons)).destroy({ require: false });
+    await new DiaryInstance().query(qb => qb.where('diary_lesson_id', 'in', diaryLessons)).destroy({ require: false });
+}
+
+export const saveData = async (user_id, group_id, diary_id, dataToSave) => {
+    if (diary_id) {
+        await deleteAllDiaryLessonsAndInstances(diary_id);
+    }
+    else {
+        ({ id: diary_id } = await new Diary({ user_id, group_id }).save());
+    }
 
     const instances = []
     for (const item of dataToSave) {

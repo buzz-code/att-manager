@@ -22,10 +22,10 @@ const DiaryEditContainer = ({ entity }) => {
     dispatch(crudAction.customHttpRequest(entity, 'POST', 'get-diary-data', { groupId: Number(groupId), diaryId: Number(diaryId) }));
   }, [dispatch, entity, groupId]);
 
-  const isDiaryDataValid = useMemo(() => diaryData && diaryData.groupData.group.id == groupId, [diaryData, groupId]);
+  const isDiaryDataValid = useMemo(() => diaryData && diaryData.groupData.group.id == groupId && (!diaryId || diaryData.groupData.diaryId == diaryId), [diaryData, groupId]);
 
   const handleSave = useCallback((data, dates, lessons) => {
-    dispatch(crudAction.customHttpRequest(entity, 'POST', 'save-diary-data', { groupId: Number(groupId), data, dates, lessons }));
+    dispatch(crudAction.customHttpRequest(entity, 'POST', 'save-diary-data', { groupId: Number(groupId), diaryId: Number(diaryId), data, dates, lessons }));
   }, [dispatch, entity, groupId]);
 
   return (
