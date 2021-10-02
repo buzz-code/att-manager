@@ -88,13 +88,6 @@ export default [
       props: { entity: entities.GROUPS, title: titles.GROUPS },
     },
     {
-      path: '/diaries',
-      component: Diaries,
-      icon: TodayIcon,
-      title: titles.DIARIES,
-      props: { entity: entities.DIARIES, title: titles.DIARIES },
-    },
-    {
       path: '/att-types',
       component: AttTypes,
       icon: MenuIcon,
@@ -125,6 +118,13 @@ export default [
       props: { entity: entities.GROUPS, title: titles.GROUPS_PRINT },
     },
     {
+      path: '/diaries',
+      component: Diaries,
+      icon: TodayIcon,
+      title: titles.DIARIES,
+      props: { entity: entities.DIARIES, title: titles.DIARIES },
+    },
+  {
       path: '/student-klasses-klass-type',
       component: StudentKlassesKlassType,
       icon: GroupWorkIcon,
