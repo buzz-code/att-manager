@@ -1,6 +1,5 @@
 * check time filters
 * validate rows before save
-* add pdf export
-* add yemot handler for student
 * add report editor
-* add belongsToMany in bookshelf models
+
+* create indexes
