@@ -44,6 +44,12 @@ export function getAttTypesForTeacherByUserId(user_id) {
         .then(res => res.toJSON());
 }
 
+export function getAttTypesByUserId(user_id) {
+    return new AttType().where({ user_id })
+        .fetchAll()
+        .then(res => res.toJSON());
+}
+
 export function getAllAttTypesByUserId(user_id) {
     return new AttType().where({ user_id })
         .fetchAll()

@@ -4,7 +4,7 @@ import genericController, { applyFilters, fetchPage } from '../../common-modules
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
 import { fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
-import { getDiaryStreamByGroupId } from '../utils/printHelper';
+import { getDiaryStreamByDiaryId } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
@@ -91,6 +91,6 @@ export async function saveDiaryData(req, res) {
  */
 export async function printOneDiary(req, res) {
     const { body: { id, group_id } } = req;
-    const { fileStream, filename } = await getDiaryStreamByGroupId(group_id);
+    const { fileStream, filename } = await getDiaryStreamByDiaryId(id, group_id);
     downloadFileFromStream(fileStream, filename, 'pdf', res);
 }

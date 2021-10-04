@@ -3,11 +3,12 @@ import path from 'path';
 import archiver from 'archiver';
 import temp from 'temp';
 import PDFMerger from 'pdf-merger-js';
+import { getJewishDate, getHebJewishMonthById, convertToHebrew } from 'jewish-dates-core';
 import { streamToBuffer } from '@jorgeferrero/stream-to-buffer';
-import hebcal from 'hebcal';
-import { getFileName, getPdfStreamFromHtml, renderEjsTemplate } from '../../common-modules/server/utils/template';
-import { getDiaryDataByGroupId } from './queryHelper';
+import { getFileName, renderEjsTemplateToStream } from '../../common-modules/server/utils/template';
+import { getDiaryDataByDiaryId, getDiaryDataByGroupId } from './queryHelper';
 import constant from '../../common-modules/server/config/directory';
+import { fillDiaryDataForPrint } from './diaryHelper';
 
 temp.track();
 
@@ -15,27 +16,13 @@ const templatesDir = path.join(__dirname, '..', '..', 'public', 'templates');
 
 const getFilenameFromGroup = ({ klass, teacher, lesson }) => `יומן נוכחות ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}`;
 
-const getMonthName = (month) => {
-    switch (month) {
-        case 1: return 'ניסן';
-        case 2: return 'אייר';
-        case 3: return 'סיוון';
-        case 4: return 'תמוז';
-        case 5: return 'אב';
-        case 6: return 'אלול';
-        case 7: return 'תשרי';
-        case 8: return 'חשוון';
-        case 9: return 'כסלו';
-        case 10: return 'טבת';
-        case 11: return 'שבט';
-        case 12: return 'אדר';
-        case 13: return 'אדר ב';
-    }
-}
-
 const addMetadataToTemplateData = async (templateData, title, diaryDate) => {
-    const heDate = new hebcal.HDate(diaryDate ? new Date(diaryDate) : new Date());
-    templateData.title = title + '- ' + getMonthName(heDate.month) + ' ' + hebcal.gematriya(heDate.year);
+    if (templateData.isFilled) {
+        templateData.title = title;
+    } else {
+        const heDate = getJewishDate(diaryDate ? new Date(diaryDate) : new Date());
+        templateData.title = title + '- ' + getHebJewishMonthById(heDate.monthName) + ' ' + convertToHebrew(heDate.year);
+    }
     templateData.font = 'data:font/truetype;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'fonts', 'ELEGANTIBOLD.TTF'), { encoding: 'base64' });
     templateData.img = 'data:image;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'img', 'header.jpg'), { encoding: 'base64' });
 }
@@ -44,8 +31,7 @@ export async function getDiaryStreamByGroupId(groupId, diaryDate) {
     const templatePath = path.join(templatesDir, "diary.ejs");
     const templateData = await getDiaryDataByGroupId(groupId);
     await addMetadataToTemplateData(templateData, 'יומן נוכחות', diaryDate);
-    const html = await renderEjsTemplate(templatePath, templateData);
-    const fileStream = await getPdfStreamFromHtml(html);
+    const fileStream = await renderEjsTemplateToStream(templatePath, templateData);
     const filename = getFilenameFromGroup(templateData.group);
     return { fileStream, filename };
 }
@@ -79,4 +65,15 @@ export async function getDiaryMergedPdfStreamByGroups(groups, diaryDate) {
     const fileStream = fs.createReadStream(tempPath);
 
     return { fileStream, filename: 'יומנים' };
+}
+
+export async function getDiaryStreamByDiaryId(diaryId, groupId) {
+    const templatePath = path.join(templatesDir, "diary.ejs");
+    const templateData = await getDiaryDataByGroupId(groupId);
+    const diaryData = await getDiaryDataByDiaryId(diaryId);
+    await fillDiaryDataForPrint(diaryData, templateData);
+    await addMetadataToTemplateData(templateData, 'יומן נוכחות');
+    const fileStream = await renderEjsTemplateToStream(templatePath, templateData);
+    const filename = getFilenameFromGroup(templateData.group);
+    return { fileStream, filename };
 }

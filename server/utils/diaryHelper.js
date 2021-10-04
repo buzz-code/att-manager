@@ -1,5 +1,7 @@
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
+import { getJewishDate, formatJewishDateHebrew } from 'jewish-dates-core';
+import { getAttTypesByUserId } from './queryHelper';
 
 export const processAndValidateData = (user_id, data, dates, lessons) => {
     const diaryLessons = {};
@@ -69,6 +71,31 @@ export function fillDiaryData(diaryData, groupData) {
     const studentDict = {};
     groupData.students.forEach(student => studentDict[student.tz] = student);
     for (const diaryInstance of diaryData) {
-        studentDict[diaryInstance.student_tz][diaryInstance.lesson_key] = diaryInstance.student_att_key || '';
+        if (studentDict[diaryInstance.student_tz]) {
+            studentDict[diaryInstance.student_tz][diaryInstance.lesson_key] = diaryInstance.student_att_key || '';
+        }
+    }
+}
+
+export async function fillDiaryDataForPrint(diaryData, groupData) {
+    fillDiaryData(diaryData, groupData);
+
+    groupData.isFilled = true;
+
+    for (const lesson of groupData.lessons) {
+        if (groupData.dates[lesson]) {
+            groupData.dates[lesson] = formatJewishDateHebrew(getJewishDate(new Date(groupData.dates[lesson])));
+        }
+    }
+
+    const attTypes = await getAttTypesByUserId(groupData.group.user_id);
+    const attTypesDict = {};
+    attTypes.forEach(item => attTypesDict[item.key] = item.name);
+    for (const student of groupData.students) {
+        for (const lesson of groupData.lessons) {
+            if (student[lesson]) {
+                student[lesson] = attTypesDict[student[lesson]];
+            }
+        }
     }
 }

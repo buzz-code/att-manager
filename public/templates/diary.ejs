@@ -91,7 +91,13 @@
                     <th>תז</th>
                     <th>שם / תאריך</th>
                     <% lessons.forEach((lesson) => {%>
-                        <th class="empty_cell">&nbsp;</th>
+                        <% if (isFilled) { %>
+                            <% if (dates[lesson]) { %>
+                                <th class="empty_cell"><%= dates[lesson] %></th>
+                            <% } %>
+                        <% } else { %>
+                            <th class="empty_cell">&nbsp;</th>
+                        <% } %>
                     <% }) %>
                 </tr>
                 <% students.forEach((student, index) => {%>
@@ -100,7 +106,13 @@
                         <td class="student-name"><%= student.tz %></td>
                         <td class="student-name"><%= student.name %></td>
                         <% lessons.forEach((lesson) => {%>
-                            <td class="empty_cell">&nbsp;</td>
+                            <% if (isFilled) { %>
+                                <% if (dates[lesson]) { %>
+                                    <td class="empty_cell"><%= student[lesson] || ' ' %></td>
+                                <% } %>
+                            <% } else { %>
+                                <td class="empty_cell">&nbsp;</td>
+                            <% } %>
                         <% }) %>
                     </tr>
                 <%  });%>
