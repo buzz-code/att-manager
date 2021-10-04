@@ -55,8 +55,13 @@ export async function getDiaryDataByGroupId(group_id) {
         .fetch({ withRelated: ['klass', 'teacher', 'lesson'] })
         .then(res => res.toJSON());
     const students = await getStudentsByUserIdAndKlassId(group.user_id, group.klass_id);
+    const lessons = [...Array(group.lesson_count)].map((_, index) => `lesson_date_${index + 1}`);
 
-    return { group, students: students.sort((a, b) => a.name.localeCompare(b.name)) };
+    return {
+        group,
+        students: students.sort((a, b) => a.name.localeCompare(b.name)),
+        lessons,
+    };
 }
 
 export function getDiaryDataByDiaryId(diary_id) {

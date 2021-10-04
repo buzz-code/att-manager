@@ -90,18 +90,18 @@
                     <th> </th>
                     <th>תז</th>
                     <th>שם / תאריך</th>
-                    <% for(var i = 0; i < group.lesson_count; i++) {%>
+                    <% lessons.forEach((lesson) => {%>
                         <th class="empty_cell">&nbsp;</th>
-                    <% } %>
+                    <% }) %>
                 </tr>
                 <% students.forEach((student, index) => {%>
                     <tr>
                         <td><%= index + 1 %>.</td>
                         <td class="student-name"><%= student.tz %></td>
                         <td class="student-name"><%= student.name %></td>
-                        <% for(var i = 0; i < group.lesson_count; i++) {%>
+                        <% lessons.forEach((lesson) => {%>
                             <td class="empty_cell">&nbsp;</td>
-                        <% } %>
+                        <% }) %>
                     </tr>
                 <%  });%>
             <% }%>

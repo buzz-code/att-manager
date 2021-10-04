@@ -51,9 +51,7 @@ const useStyles = makeStyles((theme) => ({
 const DiaryTable = ({ diaryData, handleSave }) => {
     const classes = useStyles();
 
-    const lessons = React.useMemo(() => [...Array(diaryData.groupData.group.lesson_count)]
-        .map((_, index) => `lesson_date_${index + 1}`),
-        [diaryData.groupData.group.lesson_count]);
+    const lessons = diaryData.groupData.lessons;
     const [data, setData] = React.useState(diaryData.groupData.students);
     const [dates, setDates] = React.useState(diaryData.groupData.dates || {});
 
