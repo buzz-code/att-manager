@@ -54,7 +54,7 @@ const GroupsContainer = ({ entity, title }) => {
   }, [entity, conditions]);
   const handlePrintOne = useCallback((e, rowData) => {
     dispatch(crudAction.download(entity, 'POST', 'print-one-diary', { id: rowData.id, diaryDate: conditions[4]?.value }));
-  }, [entity, conditions]);
+  }, [entity]);
   const handleOpenDiary = useCallback((e, rowData) => {
     history.push('/diary-edit/' + rowData.id);
   }, []);
