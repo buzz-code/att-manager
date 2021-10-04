@@ -40,7 +40,7 @@ const addMetadataToTemplateData = async (templateData, title, diaryDate) => {
     templateData.img = 'data:image;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'img', 'header.jpg'), { encoding: 'base64' });
 }
 
-export async function getDiaryStream(groupId, diaryDate) {
+export async function getDiaryStreamByGroupId(groupId, diaryDate) {
     const templatePath = path.join(templatesDir, "diary.ejs");
     const templateData = await getDiaryDataByGroupId(groupId);
     await addMetadataToTemplateData(templateData, 'יומן נוכחות', diaryDate);
@@ -50,13 +50,13 @@ export async function getDiaryStream(groupId, diaryDate) {
     return { fileStream, filename };
 }
 
-export async function getDiaryZipStream(groups, diaryDate) {
+export async function getDiaryZipStreamByGroups(groups, diaryDate) {
     const archive = archiver('zip');
     var tempStream = temp.createWriteStream({ suffix: '.zip' });
     archive.pipe(tempStream);
 
     for await (const group of groups) {
-        const { fileStream, filename } = await getDiaryStream(group.id, diaryDate);
+        const { fileStream, filename } = await getDiaryStreamByGroupId(group.id, diaryDate);
         archive.append(fileStream, { name: getFileName(filename, 'pdf') });
     }
     await archive.finalize();
@@ -64,11 +64,11 @@ export async function getDiaryZipStream(groups, diaryDate) {
     return { fileStream: fs.createReadStream(tempStream.path), filename: 'יומנים' };
 }
 
-export async function getDiaryMergedPdfStream(groups, diaryDate) {
+export async function getDiaryMergedPdfStreamByGroups(groups, diaryDate) {
     var merger = new PDFMerger();
 
     for (const group of groups) {
-        const { fileStream, filename } = await getDiaryStream(group.id, diaryDate);
+        const { fileStream, filename } = await getDiaryStreamByGroupId(group.id, diaryDate);
         const filePath = temp.path({ prefix: filename, suffix: '.pdf' });
         await fs.promises.writeFile(filePath, await streamToBuffer(fileStream));
         merger.add(filePath);
