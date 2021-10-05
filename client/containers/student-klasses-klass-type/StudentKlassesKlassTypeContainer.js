@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Table from '../../../common-modules/client/components/table/Table';
+import * as crudAction from '../../../common-modules/client/actions/crudAction';
 
 const getColumns = () => [
   { field: 'student_tz', title: 'מספר תז' },
@@ -10,14 +12,23 @@ const getColumns = () => [
   { field: 'klasses_3', title: 'עבודה מעשית' },
   { field: 'klasses_null', title: 'אחר' },
 ];
-const getFilters = () => [
-  { field: 'students.name', label: 'תלמידה', type: 'text', operator: 'like' },
-  { field: 'klasses.name', label: 'כיתה', type: 'text', operator: 'like' },
+const getFilters = ({ students, klasses }) => [
+  { field: 'students.name', label: 'תלמידה', type: 'list', operator: 'like', list: students, idField: 'tz' },
+  { field: 'klasses.name', label: 'כיתה', type: 'list', operator: 'like', list: klasses, idField: 'key' },
 ];
 
 const StudentKlassesKlassTypeontainer = ({ entity, title }) => {
+  const dispatch = useDispatch();
+  const {
+    GET: { '../get-edit-data': editData },
+  } = useSelector((state) => state[entity]);
+
   const columns = useMemo(() => getColumns(), []);
-  const filters = useMemo(() => getFilters(), []);
+  const filters = useMemo(() => getFilters(editData || {}), [editData]);
+
+  useEffect(() => {
+    dispatch(crudAction.customHttpRequest(entity, 'GET', '../get-edit-data'));
+  }, []);
 
   return <Table entity={entity} title={title} columns={columns} filters={filters} disableAdd={true} disableDelete={true} disableUpdate={true} />;
 };
