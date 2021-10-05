@@ -7,11 +7,11 @@ import DiaryDateCell from './DiaryDateCell';
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        marginBottom: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
         background: theme.palette.background.paper,
         boxShadow: theme.shadows[2],
         overflowY: 'auto',
+        height: 'calc(100vh - 204px)',
     },
     table: {
         borderCollapse: 'collapse',
@@ -21,27 +21,41 @@ const useStyles = makeStyles((theme) => ({
     },
     tableRow: {
         borderBottom: '1px solid rgba(224, 224, 224, 1)',
+        '&:hover': {
+            background: theme.palette.grey[200],
+        },
         '& th': {
             fontWeight: 500,
-            lineHeight: '1.5rem',
-            padding: theme.spacing(1),
+            lineHeight: '1rem',
+            padding: '4px',
             textAlign: 'left',
+            position: 'sticky',
+            top: 0,
+            zIndex: 999,
+            background: theme.palette.background.paper,
         },
         '& td': {
-            padding: theme.spacing(1),
+            padding: '2px 4px',
+            fontSize: '12px',
         },
     },
     dateField: {
         '& .selectedDate': {
-            maxWidth: 100,
+            width: 79,
             fontSize: 10,
+            padding: 1,
             lineHeight: '1rem',
             minHeight: theme.spacing(2)
         }
     },
     inputField: {
         display: 'inline-flex',
-        width: 100,
+        width: 79,
+        fontSize: '12px',
+    },
+    clearDateIcon: {
+        cursor: 'pointer',
+        fontSize: '1rem',
     },
     buttonContainer: {
         display: 'flex',
@@ -93,13 +107,6 @@ const DiaryTable = ({ diaryData, handleSave }) => {
                 </tbody>
             </table>
         </div>
-
-        <div className={classes.buttonContainer} style={{ marginTop: 16 }}>
-            <div style={{ flex: '1' }}> </div>
-            <Button variant="contained" color="primary" onClick={saveData}>
-                שמור
-            </Button>
-        </div>
     </>;
 }
 
@@ -111,7 +118,7 @@ const TableHeader = React.memo(({ lessons, dates, updateDates, classes }) => {
             <th>שם התלמידה</th>
             {lessons.map((item, index) => (
                 <th key={item}>
-                    <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'שיעור ' + (index + 1)} className={classes.dateField} />
+                    <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'שיעור ' + (index + 1)} className={classes.dateField} iconClassName={classes.clearDateIcon} />
                 </th>
             ))}
         </tr>
