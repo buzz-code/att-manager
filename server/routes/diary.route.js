@@ -1,5 +1,6 @@
 import * as diaryCtrl from '../controllers/diary.controller';
 import genericRoute from '../../common-modules/server/routes/generic.route';
+import { exportPdf } from '../../common-modules/server/utils/template';
 
 const router = genericRoute(diaryCtrl, router => {
     router.route('/get-diary-data')
@@ -15,6 +16,15 @@ const router = genericRoute(diaryCtrl, router => {
     router.route('/print-one-diary')
         .post(async (req, res) => {
             await diaryCtrl.printOneDiary(req, res);
+        });
+
+    router.route('/report-by-dates')
+        .get((req, res) => {
+            diaryCtrl.reportByDates(req, res);
+        });
+    router.route('/report-by-dates/export-pdf')
+        .post((req, res) => {
+            exportPdf(req, res);
         });
 });
 

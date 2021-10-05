@@ -15,6 +15,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PrintIcon from '@material-ui/icons/Print';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
+import DateRangeIcon from '@material-ui/icons/DateRange';
 
 import * as entities from './entity';
 import * as titles from './entity-title';
@@ -31,6 +32,7 @@ import AttTypes from '../containers/att-types/AttTypesContainer';
 import KlassTypes from '../containers/klass-types/KlassTypesContainer';
 import AttReports from '../containers/att-reports/AttReportsContainer';
 import StudentKlassesKlassType from '../containers/student-klasses-klass-type/StudentKlassesKlassTypeContainer';
+import StudentAttReport from '../containers/student-att-report/StudentAttReportContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
 import ExcelImport from '../containers/excel-import/ExcelImportContainer';
@@ -124,7 +126,7 @@ export default [
       title: titles.DIARIES,
       props: { entity: entities.DIARIES, title: titles.DIARIES },
     },
-  {
+    {
       path: '/student-klasses-klass-type',
       component: StudentKlassesKlassType,
       icon: GroupWorkIcon,
@@ -132,12 +134,19 @@ export default [
       props: { entity: entities.STUDENT_KLASSES_KLASS_TYPE, title: titles.STUDENT_KLASSES_KLASS_TYPE },
     },
     {
-      path: '/report-edit',
-      component: ReportEdit,
-      icon: AssignmentIcon,
-      title: titles.REPORT_EDIT,
-      props: { entity: entities.REPORT_EDIT, title: titles.REPORT_EDIT },
+      path: '/student-att-report',
+      component: StudentAttReport,
+      icon: DateRangeIcon,
+      title: titles.STUDENT_ATT_REPORT,
+      props: { entity: entities.STUDENT_ATT_REPORT, title: titles.STUDENT_ATT_REPORT },
     },
+    // {
+    //   path: '/report-edit',
+    //   component: ReportEdit,
+    //   icon: AssignmentIcon,
+    //   title: titles.REPORT_EDIT,
+    //   props: { entity: entities.REPORT_EDIT, title: titles.REPORT_EDIT },
+    // },
   ],
   // [
   //   {

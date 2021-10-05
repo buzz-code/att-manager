@@ -1,5 +1,5 @@
 import HttpStatus from 'http-status-codes';
-import Diary from '../models/diary.model';
+import Diary, { DiaryInstance } from '../models/diary.model';
 import genericController, { applyFilters, fetchPage } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
@@ -93,4 +93,40 @@ export async function printOneDiary(req, res) {
     const { body: { id, group_id } } = req;
     const { fileStream, filename } = await getDiaryStreamByDiaryId(id, group_id);
     downloadFileFromStream(fileStream, filename, 'pdf', res);
+}
+
+/**
+ * report by dates
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+export async function reportByDates(req, res) {
+    const dbQuery = new DiaryInstance()
+        .where({ 'diary_instances.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.leftJoin('students', 'students.tz', 'diary_instances.student_tz')
+            qb.leftJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
+            qb.leftJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
+            qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.leftJoin('klasses', 'klasses.id', 'groups.klass_id')
+            qb.whereNotNull('diary_instances.student_att_key')
+        });
+    applyFilters(dbQuery, req.query.filters);
+    const countQuery = dbQuery.clone().query()
+        .countDistinct({ count: ['students.id'] })
+        .then(res => res[0].count);
+    dbQuery.query(qb => {
+        qb.groupBy('students.id')
+        qb.select({
+            student_tz: 'students.tz',
+            student_name: 'students.name',
+            absences_1: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 1, diary_instances.student_att_key, null))'),
+            absences_2: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 2, diary_instances.student_att_key, null))'),
+            absences_3: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 3, diary_instances.student_att_key, null))'),
+            absences_null: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id is null, diary_instances.student_att_key, null))'),
+        })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
 }
