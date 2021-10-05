@@ -110,7 +110,7 @@ export async function reportByDates(req, res) {
             qb.leftJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
             qb.leftJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
-            qb.leftJoin('klasses', 'klasses.id', 'groups.klass_id')
+            qb.leftJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.whereNotNull('diary_instances.student_att_key')
         });
     applyFilters(dbQuery, req.query.filters);
