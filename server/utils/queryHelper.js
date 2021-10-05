@@ -67,6 +67,7 @@ export async function getDiaryDataByGroupId(group_id) {
         group,
         students: students.sort((a, b) => a.name.localeCompare(b.name)),
         lessons,
+        isFilled: false
     };
 }
 
