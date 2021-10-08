@@ -13,8 +13,8 @@ const getColumns = () => [
   { field: 'absences_null', title: 'אחר' },
 ];
 const getFilters = ({ students, klasses }) => [
-  { field: 'students.name', label: 'תלמידה', type: 'list', operator: 'like', list: students, idField: 'tz' },
-  { field: 'klasses.name', label: 'כיתה', type: 'list', operator: 'like', list: klasses, idField: 'key' },
+  { field: 'students.name', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
+  { field: 'klasses.name', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
 ];

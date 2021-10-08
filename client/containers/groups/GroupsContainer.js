@@ -12,9 +12,9 @@ const getColumns = ({ klasses, teachers, lessons }) => [
   { field: 'lesson_count', title: 'מספר שיעורים', type: 'numeric' },
 ];
 const getFilters = ({ klasses, teachers, lessons }) => [
-  { field: 'klasses.name', label: 'כיתה', type: 'list', operator: 'like', list: klasses, idField: 'key' },
-  { field: 'teachers.name', label: 'מורה', type: 'list', operator: 'like', list: teachers, idField: 'tz' },
-  { field: 'lessons.name', label: 'שיעור', type: 'list', operator: 'like', list: lessons, idField: 'key' },
+  { field: 'klasses.name', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
+  { field: 'teachers.name', label: 'מורה', type: 'list', operator: 'eq', list: teachers, idField: 'tz' },
+  { field: 'lessons.name', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
   { field: 'lesson_count', label: 'מספר שיעורים', type: 'number', operator: 'like' },
 ];
 
