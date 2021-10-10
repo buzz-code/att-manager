@@ -21,11 +21,13 @@ export const processAndValidateData = (user_id, data, dates, lessons) => {
                     students: []
                 }
             }
-            diaryLessons[lesson].students.push({
-                user_id,
-                student_tz: student.tz,
-                student_att_key: student[lesson] || null,
-            })
+            if (student[lesson]) {
+                diaryLessons[lesson].students.push({
+                    user_id,
+                    student_tz: student.tz,
+                    student_att_key: student[lesson] || null,
+                })
+            }
         }
     }
 
