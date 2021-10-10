@@ -1,6 +1,7 @@
+import moment from 'moment';
+import { getJewishDate, formatJewishDateHebrew } from 'jewish-dates-core';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
-import { getJewishDate, formatJewishDateHebrew } from 'jewish-dates-core';
 import { getAttTypesByUserId } from './queryHelper';
 
 export const processAndValidateData = (user_id, data, dates, lessons) => {
@@ -17,7 +18,7 @@ export const processAndValidateData = (user_id, data, dates, lessons) => {
                 diaryLessons[lesson] = {
                     user_id,
                     lesson_key: lesson,
-                    lesson_date: dates[lesson].split('T')[0],
+                    lesson_date: moment(dates[lesson]).format('YYYY-MM-DD'),
                     students: []
                 }
             }
