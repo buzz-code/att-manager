@@ -65,10 +65,10 @@ export async function getDiaryData(req, res) {
 }
 
 export async function saveDiaryData(req, res) {
-    const { body: { groupId, diaryId, data, dates, lessons } } = req;
+    const { body: { groupId, diaryId, data, dates, lessons, isSubstitute } } = req;
 
     try {
-        const dataToSave = processAndValidateData(req.currentUser.id, data, dates, lessons);
+        const dataToSave = processAndValidateData(req.currentUser.id, data, dates, lessons, isSubstitute);
         await saveData(req.currentUser.id, groupId, diaryId, dataToSave);
     } catch (e) {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

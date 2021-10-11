@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 
 import StudentAttCell from './StudentAttCell';
 import DiaryDateCell from './DiaryDateCell';
+import DiaryCheckboxCell from './DiaryCheckboxCell';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -39,6 +40,15 @@ const useStyles = makeStyles((theme) => ({
             fontSize: '12px',
         },
     },
+    checkboxField: {
+        margin: 0,
+        '& .MuiCheckbox-root': {
+            padding: 0,
+        },
+        '& .MuiFormControlLabel-label': {
+            fontSize: '12px',
+        },
+    },
     dateField: {
         '& .selectedDate': {
             width: 79,
@@ -68,6 +78,7 @@ const DiaryTable = ({ diaryData, handleSave }) => {
     const lessons = diaryData.groupData.lessons;
     const [data, setData] = React.useState(diaryData.groupData.students);
     const [dates, setDates] = React.useState(diaryData.groupData.dates || {});
+    const [isSubstitute, setIsSubstitute] = React.useState(diaryData.groupData.isSubstitute || {});
 
     const updateMyData = React.useCallback((rowIndex, columnId, value) => {
         setData(old =>
@@ -85,8 +96,11 @@ const DiaryTable = ({ diaryData, handleSave }) => {
     const updateDates = React.useCallback((columnId, value) => {
         setDates(old => ({ ...old, [columnId]: value }));
     }, [setDates]);
+    const updateIsSubstitute = React.useCallback((columnId, value) => {
+        setIsSubstitute(old => ({ ...old, [columnId]: value }));
+    }, [setIsSubstitute]);
     const saveData = () => {
-        handleSave(data, dates, lessons);
+        handleSave(data, dates, lessons, isSubstitute);
     }
 
     return <>
@@ -99,7 +113,7 @@ const DiaryTable = ({ diaryData, handleSave }) => {
 
         <div className={classes.container}>
             <table className={classes.table}>
-                <TableHeader lessons={lessons} dates={dates} updateDates={updateDates} classes={classes} />
+                <TableHeader lessons={lessons} dates={dates} updateDates={updateDates} isSubstitute={isSubstitute} updateIsSubstitute={updateIsSubstitute} classes={classes} />
                 <tbody>
                     {data.map((item, index) => (
                         <TableRow key={item.tz} item={item} index={index} lessons={lessons} attTypes={diaryData.attTypes} updateMyData={updateMyData} classes={classes} />
@@ -110,7 +124,7 @@ const DiaryTable = ({ diaryData, handleSave }) => {
     </>;
 }
 
-const TableHeader = React.memo(({ lessons, dates, updateDates, classes }) => {
+const TableHeader = React.memo(({ lessons, dates, updateDates, isSubstitute, updateIsSubstitute, classes }) => {
     return <thead>
         <tr className={classes.tableRow}>
             <th> </th>
@@ -119,6 +133,7 @@ const TableHeader = React.memo(({ lessons, dates, updateDates, classes }) => {
             {lessons.map((item, index) => (
                 <th key={item}>
                     <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'שיעור ' + (index + 1)} className={classes.dateField} iconClassName={classes.clearDateIcon} />
+                    <DiaryCheckboxCell columnId={item} updateMyData={updateIsSubstitute} value={isSubstitute[item]} className={classes.checkboxField} />
                 </th>
             ))}
         </tr>

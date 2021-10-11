@@ -95,7 +95,13 @@
                     <% lessons.forEach((lesson) => {%>
                         <% if (isFilled) { %>
                             <% if (dates[lesson]) { %>
-                                <th class="empty_cell"><%= dates[lesson] %></th>
+                                <th class="empty_cell">
+                                    <%= dates[lesson] %>
+                                    <% if (isSubstitute[lesson] == 1) { %>
+                                        <br/>
+                                        ממלאת מקום
+                                    <% } %>
+                                </th>
                             <% } %>
                         <% } else { %>
                             <th class="empty_cell">&nbsp;</th>

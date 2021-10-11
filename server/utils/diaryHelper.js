@@ -4,7 +4,7 @@ import bookshelf from '../../common-modules/server/config/bookshelf';
 import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
 import { getAttTypesByUserId } from './queryHelper';
 
-export const processAndValidateData = (user_id, data, dates, lessons) => {
+export const processAndValidateData = (user_id, data, dates, lessons, isSubstitute) => {
     const diaryLessons = {};
     for (const student of data) {
         for (const lesson of lessons) {
@@ -19,6 +19,7 @@ export const processAndValidateData = (user_id, data, dates, lessons) => {
                     user_id,
                     lesson_key: lesson,
                     lesson_date: moment(dates[lesson]).format('YYYY-MM-DD'),
+                    is_substitute: isSubstitute[lesson],
                     students: []
                 }
             }
@@ -70,6 +71,7 @@ export const saveData = async (user_id, group_id, diary_id, dataToSave) => {
 
 export function fillDiaryData(diaryData, groupData) {
     groupData.dates = Object.fromEntries(diaryData.map(({ lesson_key, lesson_date }) => ([lesson_key, lesson_date])));
+    groupData.isSubstitute = Object.fromEntries(diaryData.map(({ lesson_key, is_substitute }) => ([lesson_key, is_substitute])));
 
     const studentDict = {};
     groupData.students.forEach(student => studentDict[student.tz] = student);

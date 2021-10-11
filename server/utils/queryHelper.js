@@ -76,7 +76,7 @@ export function getDiaryDataByDiaryId(diary_id) {
         .query(qb => {
             qb.leftJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', 'diary_instances.diary_lesson_id', 'diary_lessons.id')
-            qb.select('lesson_key', 'lesson_date', 'student_tz', 'student_att_key')
+            qb.select('lesson_key', 'lesson_date', 'student_tz', 'student_att_key', 'is_substitute')
         })
         .fetchAll()
         .then(res => res.toJSON());
