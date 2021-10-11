@@ -5,7 +5,7 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 
 const getColumns = () => [
-  { field: 'student_tz', title: 'מספר תז' },
+//   { field: 'student_tz', title: 'מספר תז' },
   { field: 'student_name', title: 'תלמידה' },
   { field: 'absences_1', title: 'בסיס' },
   { field: 'absences_2', title: 'התמחות' },
