@@ -7,6 +7,7 @@ import * as crudAction from '../../../common-modules/client/actions/crudAction';
 const getColumns = () => [
 //   { field: 'student_tz', title: 'מספר תז' },
   { field: 'student_name', title: 'תלמידה' },
+  { field: 'student_base_klass', title: 'כיתה' },
   { field: 'absences_1', title: 'בסיס' },
   { field: 'absences_2', title: 'התמחות' },
   { field: 'absences_3', title: 'עבודה מעשית' },
@@ -14,7 +15,7 @@ const getColumns = () => [
 ];
 const getFilters = ({ students, klasses }) => [
   { field: 'students.name', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
-  { field: 'klasses.name', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
+  { field: 'klasses2.name', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
 ];

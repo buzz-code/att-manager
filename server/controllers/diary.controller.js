@@ -111,6 +111,8 @@ export async function reportByDates(req, res) {
             qb.leftJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
             qb.leftJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz',)
+            qb.leftJoin({ klasses2: 'klasses' }, bookshelf.knex.raw('klasses2.key = student_klasses.klass_id AND klasses2.klass_type_id = 1'))
             qb.whereNotNull('diary_instances.student_att_key')
         });
     applyFilters(dbQuery, req.query.filters);
@@ -122,6 +124,7 @@ export async function reportByDates(req, res) {
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
+            student_base_klass: bookshelf.knex.raw('GROUP_CONCAT(DISTINCT(klasses2.name) SEPARATOR ", ")'),
             absences_1: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 1, diary_instances.student_att_key, null))'),
             absences_2: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 2, diary_instances.student_att_key, null))'),
             absences_3: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 3, diary_instances.student_att_key, null))'),
