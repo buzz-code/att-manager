@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
@@ -11,16 +11,24 @@ const title = 'יומן נוכחות';
 
 const DiaryEditContainer = ({ entity }) => {
   const { groupId, diaryId } = useParams();
+  const history = useHistory();
 
   const dispatch = useDispatch();
   const {
     isLoading, error,
-    POST: { 'get-diary-data': diaryData },
+    POST: { 'get-diary-data': diaryData, 'save-diary-data': saveDiaryData },
   } = useSelector((state) => state[entity]);
 
   useEffect(() => {
     dispatch(crudAction.customHttpRequest(entity, 'POST', 'get-diary-data', { groupId: Number(groupId), diaryId: Number(diaryId) }));
   }, [dispatch, entity, groupId]);
+  useEffect(() => {
+    if (saveDiaryData) {
+      dispatch(crudAction.clearState(entity, 'POST', 'get-diary-data'));
+      dispatch(crudAction.clearState(entity, 'POST', 'save-diary-data'));
+      history.goBack();
+    }
+  }, [dispatch, saveDiaryData]);
 
   const isDiaryDataValid = useMemo(() => diaryData && diaryData.groupData.group.id == groupId && (!diaryId || diaryData.groupData.diaryId == diaryId), [diaryData, groupId]);
 
