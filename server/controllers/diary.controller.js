@@ -112,8 +112,9 @@ export async function reportByDates(req, res) {
             qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
             qb.leftJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz',)
-            qb.leftJoin({ klasses2: 'klasses' }, bookshelf.knex.raw('klasses2.key = student_klasses.klass_id AND klasses2.klass_type_id = 1'))
+            qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses.klass_id')
             qb.whereNotNull('diary_instances.student_att_key')
+            qb.where('klasses2.klass_type_id', 1)
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
