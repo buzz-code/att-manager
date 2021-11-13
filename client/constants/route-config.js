@@ -33,6 +33,7 @@ import KlassTypes from '../containers/klass-types/KlassTypesContainer';
 import AttReports from '../containers/att-reports/AttReportsContainer';
 import StudentKlassesKlassType from '../containers/student-klasses-klass-type/StudentKlassesKlassTypeContainer';
 import StudentAttReport from '../containers/student-att-report/StudentAttReportContainer';
+import PivotReports from '../containers/pivot-reports/PivotReportsContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
 import ExcelImport from '../containers/excel-import/ExcelImportContainer';
@@ -140,7 +141,14 @@ export default [
       title: titles.STUDENT_ATT_REPORT,
       props: { entity: entities.STUDENT_ATT_REPORT, title: titles.STUDENT_ATT_REPORT },
     },
-    // {
+    {
+      path: '/pivot-reports',
+      component: PivotReports,
+      icon: AssignmentTurnedInIcon,
+      title: titles.PIVOT_REPORTS,
+      props: { entity: entities.PIVOT_REPORTS, title: titles.PIVOT_REPORTS },
+    },
+ // {
     //   path: '/report-edit',
     //   component: ReportEdit,
     //   icon: AssignmentIcon,

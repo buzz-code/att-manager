@@ -1,11 +1,16 @@
 import HttpStatus from 'http-status-codes';
 import Diary, { DiaryInstance } from '../models/diary.model';
-import genericController, { applyFilters, fetchPage } from '../../common-modules/server/controllers/generic.controller';
+import Student from '../models/student.model';
+import Klass from '../models/klass.model';
+import Teacher from '../models/teacher.model';
+import Lesson from '../models/lesson.model';
+import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
 import { fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
 import { getDiaryStreamByDiaryId } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
+import { getListFromTable } from '../../common-modules/server/utils/common';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -133,4 +138,89 @@ export async function reportByDates(req, res) {
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
+}
+
+export async function getEditData(req, res) {
+    const [students, klasses, teachers, lessons] = await Promise.all([
+        getListFromTable(Student, req.currentUser.id, 'tz'),
+        getListFromTable(Klass, req.currentUser.id, 'key'),
+        getListFromTable(Teacher, req.currentUser.id, 'tz'),
+        getListFromTable(Lesson, req.currentUser.id, 'key'),
+    ]);
+    res.json({
+        error: null,
+        data: { students, klasses, teachers, lessons }
+    });
+}
+
+export async function getPivotData(req, res) {
+    const studentFilters = [];
+    const reportFilters = [];
+    if (req.query.filters) {
+        const filtersObj = JSON.parse(req.query.filters);
+        for (const filter of Object.values(filtersObj)) {
+            if (filter.field.startsWith('students') || filter.field.startsWith('klasses')) {
+                studentFilters.push(filter);
+            } else {
+                reportFilters.push(filter);
+            }
+        }
+    }
+
+    const dbQuery = new Student()
+        .where({ 'students.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz')
+            qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
+            qb.distinct('students.tz')
+        });
+
+    applyFilters(dbQuery, JSON.stringify(studentFilters));
+    const countQuery = dbQuery.clone().query()
+        .clearSelect()
+        .countDistinct({ count: ['students.id'] })
+        .then(res => res[0].count);
+    const studentsRes = await fetchPagePromise({ dbQuery, countQuery }, req.query);
+
+    const pivotQuery = new DiaryInstance()
+        .where('diary_instances.student_tz', 'in', studentsRes.data.map(item => item.tz))
+        .query(qb => {
+            qb.leftJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
+            qb.leftJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
+            qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.leftJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.leftJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.select('diary_instances.*')
+            qb.select({
+                teacher_name: 'teachers.name',
+                lesson_name: 'lessons.name',
+            })
+        });
+
+    applyFilters(pivotQuery, JSON.stringify(reportFilters));
+    const pivotRes = await fetchPagePromise({ dbQuery: pivotQuery }, { page: 0, pageSize: 1000 * req.query.pageSize, /* todo:orderBy */ });
+
+    const pivotData = studentsRes.data;
+    const pivotDict = pivotData.reduce((prev, curr) => ({ ...prev, [curr.tz]: curr }), {});
+    pivotRes.data.forEach(item => {
+        if (pivotDict[item.student_tz].total === undefined) {
+            pivotDict[item.student_tz].total = 0;
+        }
+        const key = item.lesson_name + '_' + item.teacher_name;
+        if (pivotDict[item.student_tz][key] === undefined) {
+            pivotDict[item.student_tz][key] = 0;
+            pivotDict[item.student_tz][key + '_title'] = (item.lesson_name || 'לא ידוע') + ' ' + (item.teacher_name || 'לא ידוע');
+        }
+        if (item.student_att_key) {
+            pivotDict[item.student_tz][key] += 1;
+            pivotDict[item.student_tz].total += 1;
+        }
+    })
+
+    res.send({
+        error: null,
+        data: pivotData,
+        page: studentsRes.page,
+        total: studentsRes.total,
+    })
 }
