@@ -111,11 +111,11 @@ export async function reportByDates(req, res) {
     const dbQuery = new DiaryInstance()
         .where({ 'diary_instances.user_id': req.currentUser.id })
         .query(qb => {
-            qb.leftJoin('students', 'students.tz', 'diary_instances.student_tz')
-            qb.leftJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
-            qb.leftJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
-            qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
-            qb.leftJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('students', 'students.tz', 'diary_instances.student_tz')
+            qb.innerJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
+            qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
+            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz',)
             qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses.klass_id')
             qb.whereNotNull('diary_instances.student_att_key')
@@ -185,11 +185,11 @@ export async function getPivotData(req, res) {
     const pivotQuery = new DiaryInstance()
         .where('diary_instances.student_tz', 'in', studentsRes.data.map(item => item.tz))
         .query(qb => {
-            qb.leftJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
-            qb.leftJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
-            qb.leftJoin('groups', 'groups.id', 'diaries.group_id')
-            qb.leftJoin('teachers', 'teachers.tz', 'groups.teacher_id')
-            qb.leftJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.innerJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
+            qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
+            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.select('diary_instances.*')
             qb.select({
                 teacher_name: 'teachers.name',
