@@ -33,6 +33,11 @@ const router = genericRoute(diaryCtrl, router => {
             await diaryCtrl.getPivotData(req, res);
         });
 
+    router.route('/get-all-diary-instances')
+        .get(async (req, res) => {
+            await diaryCtrl.getAllDiaryInstances(req, res);
+        });
+
     router.route('/:reportId/export-pdf')
         .post((req, res) => {
             exportPdf(req, res);

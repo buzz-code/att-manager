@@ -224,3 +224,40 @@ export async function getPivotData(req, res) {
         total: studentsRes.total,
     })
 }
+
+export async function getAllDiaryInstances(req, res) {
+    const dbQuery = new DiaryInstance()
+        .where({ 'diary_instances.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.innerJoin('students', 'students.tz', 'diary_instances.student_tz')
+            qb.innerJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
+            qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
+            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.innerJoin('att_types', 'att_types.key', 'diary_instances.student_att_key')
+            qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz',)
+            qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses.klass_id')
+            qb.whereNotNull('diary_instances.student_att_key')
+            qb.where('klasses2.klass_type_id', 1)
+        });
+    applyFilters(dbQuery, req.query.filters);
+    const countQuery = dbQuery.clone().query()
+        .countDistinct({ count: ['diary_instances.id'] })
+        .then(res => res[0].count);
+    dbQuery.query(qb => {
+        qb.groupBy('diary_instances.id')
+        qb.select({
+            student_tz: 'students.tz',
+            student_name: 'students.name',
+            student_base_klass: bookshelf.knex.raw('GROUP_CONCAT(DISTINCT(klasses2.name) SEPARATOR ", ")'),
+            teacher_name: 'teachers.name',
+            klass_name: 'klasses.name',
+            lesson_name: 'lessons.name',
+            att_type_name: 'att_types.name',
+            lesson_date: 'diary_lessons.lesson_date',
+        })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
+}

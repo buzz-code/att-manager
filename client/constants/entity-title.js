@@ -12,6 +12,7 @@ export const ATT_REPORTS = 'דיווחים';
 export const STUDENT_KLASSES_KLASS_TYPE = 'דוח שיוך תלמידה';
 export const STUDENT_ATT_REPORT = 'דוח חיסורי תלמידה';
 export const PIVOT_REPORTS = 'דוח PIVOT';
+export const DIARY_INSTANCES_REPORTS = 'דיווחים';
 export const REPORT_EDIT = 'עריכת דיווחים';
 export const STUDENT_REPORTS = 'דו"ח לתלמידה';
 export const TEACHER_REPORTS = 'דו"ח למורה';

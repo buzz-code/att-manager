@@ -34,6 +34,7 @@ import AttReports from '../containers/att-reports/AttReportsContainer';
 import StudentKlassesKlassType from '../containers/student-klasses-klass-type/StudentKlassesKlassTypeContainer';
 import StudentAttReport from '../containers/student-att-report/StudentAttReportContainer';
 import PivotReports from '../containers/pivot-reports/PivotReportsContainer';
+import DiaryInstancesReports from '../containers/diary-instances-reports/DiaryInstancesReportsContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
 import ExcelImport from '../containers/excel-import/ExcelImportContainer';
@@ -90,20 +91,20 @@ export default [
       title: titles.GROUPS,
       props: { entity: entities.GROUPS, title: titles.GROUPS },
     },
-    {
-      path: '/att-types',
-      component: AttTypes,
-      icon: MenuIcon,
-      title: titles.ATT_TYPES,
-      props: { entity: entities.ATT_TYPES, title: titles.ATT_TYPES },
-    },
-    {
-      path: '/klass-types',
-      component: KlassTypes,
-      icon: MenuIcon,
-      title: titles.KLASS_TYPES,
-      props: { entity: entities.KLASS_TYPES, title: titles.KLASS_TYPES },
-    },
+    // {
+    //   path: '/att-types',
+    //   component: AttTypes,
+    //   icon: MenuIcon,
+    //   title: titles.ATT_TYPES,
+    //   props: { entity: entities.ATT_TYPES, title: titles.ATT_TYPES },
+    // },
+    // {
+    //   path: '/klass-types',
+    //   component: KlassTypes,
+    //   icon: MenuIcon,
+    //   title: titles.KLASS_TYPES,
+    //   props: { entity: entities.KLASS_TYPES, title: titles.KLASS_TYPES },
+    // },
     {
       path: '/diary-edit/:groupId/:diaryId?',
       hideFromDrawer: true,
@@ -148,7 +149,14 @@ export default [
       title: titles.PIVOT_REPORTS,
       props: { entity: entities.PIVOT_REPORTS, title: titles.PIVOT_REPORTS },
     },
- // {
+    {
+      path: '/diary-instances-reports',
+      component: DiaryInstancesReports,
+      icon: AssignmentTurnedInIcon,
+      title: titles.DIARY_INSTANCES_REPORTS,
+      props: { entity: entities.DIARY_INSTANCES_REPORTS, title: titles.DIARY_INSTANCES_REPORTS },
+    },
+// {
     //   path: '/report-edit',
     //   component: ReportEdit,
     //   icon: AssignmentIcon,
