@@ -159,8 +159,11 @@ export async function getPivotData(req, res) {
     if (req.query.filters) {
         const filtersObj = JSON.parse(req.query.filters);
         for (const filter of Object.values(filtersObj)) {
-            if (filter.field.startsWith('students') || filter.field.startsWith('klasses')) {
+            if (filter.field.startsWith('students')) {
                 studentFilters.push(filter);
+            } else if (filter.field.startsWith('klasses')) {
+                studentFilters.push(filter);
+                reportFilters.push(filter);
             } else {
                 reportFilters.push(filter);
             }
@@ -189,6 +192,7 @@ export async function getPivotData(req, res) {
             qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.select('diary_instances.*')
             qb.select({
