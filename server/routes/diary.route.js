@@ -38,6 +38,11 @@ const router = genericRoute(diaryCtrl, router => {
             await diaryCtrl.getAllDiaryInstances(req, res);
         });
 
+    router.route('/get-all-diary-lessons')
+        .get(async (req, res) => {
+            await diaryCtrl.getDiaryLessons(req, res);
+        });
+
     router.route('/:reportId/export-pdf')
         .post((req, res) => {
             exportPdf(req, res);

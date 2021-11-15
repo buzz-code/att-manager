@@ -273,3 +273,43 @@ export async function getAllDiaryInstances(req, res) {
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
 }
+
+export async function getDiaryLessons(req, res) {
+    const dbQuery = new Student()
+        .where({ 'students.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
+            qb.join('diaries')
+            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
+            qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
+            qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+        });
+    applyFilters(dbQuery, req.query.filters);
+    const countQuery = dbQuery.clone().query()
+        .countDistinct({ count: ['students.id', 'groups.id'] })
+        .then(res => res[0].count);
+    dbQuery.query(qb => {
+        qb.groupBy('students.id', 'groups.id')
+        qb.select({
+            student_tz: 'students.tz',
+            student_name: 'students.name',
+            student_base_klass: 'student_base_klass.klass_name',
+            teacher_name: 'teachers.name',
+            klass_name: 'klasses.name',
+            lesson_name: 'lessons.name',
+        })
+        qb.count({
+            total_lessons: 'diary_lessons.id',
+            abs_count: 'diary_instances.student_att_key',
+        })
+        qb.select({
+            abs_count_num: bookshelf.knex.raw('(count(diary_instances.student_att_key) * 100) / count(diary_lessons.id)'),
+            abs_percents: bookshelf.knex.raw('CONCAT(ROUND((count(diary_instances.student_att_key) * 100) / count(diary_lessons.id), 0), "%")'),
+        })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
+}

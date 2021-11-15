@@ -13,6 +13,7 @@ export const STUDENT_KLASSES_KLASS_TYPE = 'student-klasses/report-by-klass-type'
 export const STUDENT_ATT_REPORT = 'diaries/report-by-dates';
 export const PIVOT_REPORTS = 'diaries/get-pivot-data';
 export const DIARY_INSTANCES_REPORTS = 'diaries/get-all-diary-instances';
+export const DIARY_LESSONS_REPORTS = 'diaries/get-all-diary-lessons';
 export const REPORT_EDIT = 'report-edit';
 export const STUDENT_REPORTS = 'reports/getStudentReport';
 export const TEACHER_REPORTS = 'reports/getTeacherReport';

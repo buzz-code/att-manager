@@ -35,6 +35,7 @@ import StudentKlassesKlassType from '../containers/student-klasses-klass-type/St
 import StudentAttReport from '../containers/student-att-report/StudentAttReportContainer';
 import PivotReports from '../containers/pivot-reports/PivotReportsContainer';
 import DiaryInstancesReports from '../containers/diary-instances-reports/DiaryInstancesReportsContainer';
+import DiaryLessonsReports from '../containers/diary-lessons-reports/DiaryLessonsReportsContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
 import ExcelImport from '../containers/excel-import/ExcelImportContainer';
@@ -156,7 +157,14 @@ export default [
       title: titles.DIARY_INSTANCES_REPORTS,
       props: { entity: entities.DIARY_INSTANCES_REPORTS, title: titles.DIARY_INSTANCES_REPORTS },
     },
-// {
+    {
+      path: '/diary-lessons-reports',
+      component: DiaryLessonsReports,
+      icon: AssignmentTurnedInIcon,
+      title: titles.DIARY_LESSONS_REPORTS,
+      props: { entity: entities.DIARY_LESSONS_REPORTS, title: titles.DIARY_LESSONS_REPORTS },
+    },
+    // {
     //   path: '/report-edit',
     //   component: ReportEdit,
     //   icon: AssignmentIcon,
