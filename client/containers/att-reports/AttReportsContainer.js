@@ -13,10 +13,10 @@ const getColumns = ({ students, teachers, lessons, attTypes }) => [
   { field: 'enter_time', title: 'שעת כניסה' },
 ];
 const getFilters = ({ students, teachers, lessons, attTypes }) => [
-  { field: 'students.name', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
-  { field: 'teachers.name', label: 'מורה', type: 'list', operator: 'eq', list: teachers, idField: 'tz' },
-  { field: 'lessons.name', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
-  { field: 'att_types.name', label: 'סוג דיווח', type: 'list', operator: 'eq', list: attTypes, idField: 'key' },
+  { field: 'students.tz', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
+  { field: 'teachers.tz', label: 'מורה', type: 'list', operator: 'eq', list: teachers, idField: 'tz' },
+  { field: 'lessons.key', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
+  { field: 'att_types.key', label: 'סוג דיווח', type: 'list', operator: 'eq', list: attTypes, idField: 'key' },
   { field: 'enter_time', label: 'שעת כניסה', type: 'text', operator: 'like' },
 ];
 

@@ -14,8 +14,8 @@ const getColumns = () => [
   { field: 'absences_null', title: 'אחר' },
 ];
 const getFilters = ({ students, klasses }) => [
-  { field: 'students.name', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
-  { field: 'klasses2.name', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
+  { field: 'students.tz', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
+  { field: 'klasses2.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
 ];
