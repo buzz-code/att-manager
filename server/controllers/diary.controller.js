@@ -175,13 +175,21 @@ export async function getPivotData(req, res) {
         .query(qb => {
             qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz')
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
-            qb.distinct('students.tz')
+            qb.leftJoin({ student_klasses2: 'student_klasses' }, 'student_klasses2.student_tz', 'students.tz',)
+            qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses2.klass_id')
+            qb.where('klasses2.klass_type_id', 1)
+            qb.groupBy('students.id')
+            qb.distinct('students.tz', 'students.name')
+            qb.select({
+                student_base_klass: bookshelf.knex.raw('GROUP_CONCAT(DISTINCT(klasses2.name) SEPARATOR ", ")'),
+            })
         });
 
     applyFilters(dbQuery, JSON.stringify(studentFilters));
     const countQuery = dbQuery.clone().query()
         .clearSelect()
-        .countDistinct({ count: ['students.id'] })
+        .clearGroup()
+        .countDistinct({ count: ['students.id', 'students.name'] })
         .then(res => res[0].count);
     const studentsRes = await fetchPagePromise({ dbQuery, countQuery }, req.query);
 

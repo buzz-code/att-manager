@@ -15,6 +15,7 @@ const getColumns = ({ students }, data) => [
     columnOrder: 'students.name',
     ...getPropsForAutoComplete('tz', students, 'tz'),
   },
+  { field: 'student_base_klass', title: 'כיתת בסיס', sorting: false },
   ...getColumnsForPivot(data),
   { field: 'total', title: 'סה"כ', sorting: false },
 ];
