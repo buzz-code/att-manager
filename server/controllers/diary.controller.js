@@ -4,6 +4,7 @@ import Student from '../models/student.model';
 import Klass from '../models/klass.model';
 import Teacher from '../models/teacher.model';
 import Lesson from '../models/lesson.model';
+import AttType from '../models/att-type.model';
 import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
@@ -141,15 +142,16 @@ export async function reportByDates(req, res) {
 }
 
 export async function getEditData(req, res) {
-    const [students, klasses, teachers, lessons] = await Promise.all([
+    const [students, klasses, teachers, lessons, attTypes] = await Promise.all([
         getListFromTable(Student, req.currentUser.id, 'tz'),
         getListFromTable(Klass, req.currentUser.id, 'key'),
         getListFromTable(Teacher, req.currentUser.id, 'tz'),
         getListFromTable(Lesson, req.currentUser.id, 'key'),
+        getListFromTable(AttType, req.currentUser.id, 'key'),
     ]);
     res.json({
         error: null,
-        data: { students, klasses, teachers, lessons }
+        data: { students, klasses, teachers, lessons, attTypes }
     });
 }
 

@@ -9,13 +9,13 @@ const getColumns = ({ }) => [
   { field: 'student_tz', title: 'תז תלמידה', columnOrder: 'students.tz' },
   { field: 'student_name', title: 'תלמידה', columnOrder: 'students.name' },
   { field: 'student_base_klass', title: 'כיתת בסיס', columnOrder: 'students.name' },
-  { field: 'teacher_name', title: 'מורה', columnOrder: 'students.name' },
-  { field: 'klass_name', title: 'כיתה', columnOrder: 'students.name' },
-  { field: 'lesson_name', title: 'שיעור', columnOrder: 'students.name' },
+  { field: 'teacher_name', title: 'מורה', columnOrder: 'teachers.name' },
+  { field: 'klass_name', title: 'כיתה', columnOrder: 'klasses.name' },
+  { field: 'lesson_name', title: 'שיעור', columnOrder: 'lessons.name' },
   { field: 'lesson_date', title: 'תאריך', render: ({ lesson_date }) => lesson_date && formatJewishDateHebrew(getJewishDate(new Date(lesson_date))) },
-  { field: 'att_type_name', title: 'סוג היעדרות', columnOrder: 'students.name' },
+  { field: 'att_type_name', title: 'סוג היעדרות', columnOrder: 'att_types.name' },
 ];
-const getFilters = ({ students, teachers, klasses, lessons }) => [
+const getFilters = ({ students, teachers, klasses, lessons, attTypes }) => [
   { field: 'students.tz', label: 'תז תלמידה', type: 'text', operator: 'like' },
   {
     field: 'students.tz',
@@ -47,6 +47,14 @@ const getFilters = ({ students, teachers, klasses, lessons }) => [
     type: 'list',
     operator: 'eq',
     list: lessons,
+    idField: 'key',
+  },
+  {
+    field: 'att_types.key',
+    label: 'סוג היעדרות',
+    type: 'list',
+    operator: 'eq',
+    list: attTypes,
     idField: 'key',
   },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
