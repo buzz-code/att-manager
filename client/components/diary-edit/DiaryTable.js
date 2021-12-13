@@ -70,6 +70,15 @@ const useStyles = makeStyles((theme) => ({
     buttonContainer: {
         display: 'flex',
     },
+    stickyTd: {
+        position: 'sticky',
+        left: 0,
+        zIndex: 999,
+        background: theme.palette.background.paper,
+        'tr:hover &': {
+            background: 'transparent',
+        },
+    },
 }));
 
 const DiaryTable = ({ diaryData, handleSave }) => {
@@ -144,7 +153,7 @@ const TableRow = React.memo(({ item, index, lessons, attTypes, updateMyData, cla
     return <tr className={classes.tableRow}>
         <td>{index + 1}</td>
         <td>{item.tz}</td>
-        <td>{item.name}</td>
+        <td className={classes.stickyTd}>{item.name}</td>
         {lessons.map((lesson) => (
             <td key={index + lesson}>
                 <StudentAttCell index={index} columnId={lesson} updateMyData={updateMyData} value={item[lesson]} attTypes={attTypes} className={classes.inputField} />
