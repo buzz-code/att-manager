@@ -8,7 +8,7 @@ import * as crudAction from '../../../common-modules/client/actions/crudAction';
 
 const getColumns = () => [
   { field: 'group_name', title: 'קבוצה' },
-  { field: 'first_lesson', title: 'שיעור ראשון', render: ({ first_lesson }) => first_lesson && formatJewishDateHebrew(getJewishDate(new Date(first_lesson))) },
+  { field: 'first_lesson', title: 'שיעור ראשון', render: ({ first_lesson }) => first_lesson && formatJewishDateHebrew(getJewishDate(new Date(first_lesson))), isHebrewDate: true },
 ];
 const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'klasses.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },

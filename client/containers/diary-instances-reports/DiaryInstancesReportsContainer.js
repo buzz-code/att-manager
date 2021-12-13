@@ -12,7 +12,7 @@ const getColumns = ({ }) => [
   { field: 'teacher_name', title: 'מורה', columnOrder: 'teachers.name' },
   { field: 'klass_name', title: 'כיתה', columnOrder: 'klasses.name' },
   { field: 'lesson_name', title: 'שיעור', columnOrder: 'lessons.name' },
-  { field: 'lesson_date', title: 'תאריך', render: ({ lesson_date }) => lesson_date && formatJewishDateHebrew(getJewishDate(new Date(lesson_date))) },
+  { field: 'lesson_date', title: 'תאריך', render: ({ lesson_date }) => lesson_date && formatJewishDateHebrew(getJewishDate(new Date(lesson_date))), isHebrewDate: true },
   { field: 'att_type_name', title: 'סוג היעדרות', columnOrder: 'att_types.name' },
 ];
 const getFilters = ({ students, teachers, klasses, lessons, attTypes }) => [
