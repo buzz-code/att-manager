@@ -32,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
             textAlign: 'left',
             position: 'sticky',
             top: 0,
-            zIndex: 999,
+            zIndex: 9999,
             background: theme.palette.background.paper,
         },
         '& td': {
