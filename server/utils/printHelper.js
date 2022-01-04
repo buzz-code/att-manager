@@ -14,25 +14,29 @@ temp.track();
 
 const templatesDir = path.join(__dirname, '..', '..', 'public', 'templates');
 
-const getFilenameFromGroup = ({ klass, teacher, lesson }) => `יומן נוכחות ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}`;
+const addCommonMetadataToTemplateData = async (templateData) => {
+    templateData.font = 'data:font/truetype;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'fonts', 'ELEGANTIBOLD.TTF'), { encoding: 'base64' });
+    templateData.img = 'data:image;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'img', 'header.jpg'), { encoding: 'base64' });
+}
 
-const addMetadataToTemplateData = async (templateData, title, diaryDate) => {
+const getDiaryFilenameFromGroup = ({ klass, teacher, lesson }) => `יומן נוכחות ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}`;
+
+const addDiaryMetadataToTemplateData = async (templateData, title, diaryDate) => {
     if (templateData.isFilled) {
         templateData.title = title;
     } else {
         const heDate = getJewishDate(diaryDate ? new Date(diaryDate) : new Date());
         templateData.title = title + '- ' + getHebJewishMonthById(heDate.monthName) + ' ' + convertToHebrew(heDate.year);
     }
-    templateData.font = 'data:font/truetype;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'fonts', 'ELEGANTIBOLD.TTF'), { encoding: 'base64' });
-    templateData.img = 'data:image;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'img', 'header.jpg'), { encoding: 'base64' });
+    await addCommonMetadataToTemplateData(templateData);
 }
 
 export async function getDiaryStreamByGroupId(groupId, diaryDate) {
     const templatePath = path.join(templatesDir, "diary.ejs");
     const templateData = await getDiaryDataByGroupId(groupId);
-    await addMetadataToTemplateData(templateData, 'יומן נוכחות', diaryDate);
+    await addDiaryMetadataToTemplateData(templateData, 'יומן נוכחות', diaryDate);
     const fileStream = await renderEjsTemplateToStream(templatePath, templateData);
-    const filename = getFilenameFromGroup(templateData.group);
+    const filename = getDiaryFilenameFromGroup(templateData.group);
     return { fileStream, filename };
 }
 
@@ -72,8 +76,8 @@ export async function getDiaryStreamByDiaryId(diaryId, groupId) {
     const templateData = await getDiaryDataByGroupId(groupId);
     const diaryData = await getDiaryDataByDiaryId(diaryId);
     await fillDiaryDataForPrint(diaryData, templateData);
-    await addMetadataToTemplateData(templateData, 'יומן נוכחות');
+    await addDiaryMetadataToTemplateData(templateData, 'יומן נוכחות');
     const fileStream = await renderEjsTemplateToStream(templatePath, templateData);
-    const filename = getFilenameFromGroup(templateData.group);
+    const filename = getDiaryFilenameFromGroup(templateData.group);
     return { fileStream, filename };
 }
