@@ -38,6 +38,7 @@ import DiaryInstancesReports from '../containers/diary-instances-reports/DiaryIn
 import DiaryLessonsReports from '../containers/diary-lessons-reports/DiaryLessonsReportsContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
+import GradesPrint from '../containers/grades-print/GradesPrintContainer';
 import ExcelImport from '../containers/excel-import/ExcelImportContainer';
 import DiaryEdit from '../containers/diary-edit/DiaryEditContainer';
 
@@ -121,6 +122,13 @@ export default [
       icon: PrintIcon,
       title: titles.GROUPS_PRINT,
       props: { entity: entities.GROUPS, title: titles.GROUPS_PRINT },
+    },
+    {
+      path: '/grades-print',
+      component: GradesPrint,
+      icon: PrintIcon,
+      title: titles.GRADES_PRINT,
+      props: { entity: entities.GROUPS, title: titles.GRADES_PRINT },
     },
     {
       path: '/diaries',

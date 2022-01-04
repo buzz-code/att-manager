@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <% if (font) { %>
+            <style>
+                @font-face {
+                    font-family: CustomFont;
+                    src: url(<%= font %>);
+                }
+            </style>
+        <% } %>
+        <style>
+            html {
+                zoom: 0.75;
+            }
+            body {
+                direction: rtl;
+                font-family: CustomFont, 'Roboto', sans-serif;
+                font-size: 12px;
+            }
+            .container {
+                width: calc(100% - 40px);
+                max-width: 1400px;
+                margin: auto;
+                text-align: center;
+            }
+            .header-wrapper {
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-justify-content: space-around;
+                -ms-justify-content: space-around;
+                justify-content: space-around;
+            }
+            h3 {
+                margin: 0;
+            }
+            .value {
+                font-weight: normal;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: .5em;
+            }
+            table, th, td {
+                border: 1px solid black;
+                padding: 4px;
+            }
+            th {
+                /* background-color: #727fc9; */
+                border: 3px solid black;
+                /* font-size: 1.25rem; */
+                /* color: white; */
+            }
+            .student-name {
+                min-width: 75px;
+                max-width: 100px;
+            }
+            .empty_cell {
+                min-width: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <%- include('header', { title, img }); %>
+        <div class="container">
+            <div class="header-wrapper">
+                <% if (group.teacher) { %>
+                    <h3>מורה: 
+                        <span class="value"><%= group.teacher.name %></span>
+                    </h3>
+                <% } %>
+                <% if (group.lesson) { %>
+                    <h3>שיעור: 
+                        <span class="value"><%= group.lesson.name %></span>
+                    </h3>
+                <% } %>
+            </div>
+
+            <table>
+            <% if (students.length > 0) { %>
+                <tr>
+                    <th> </th>
+                    <th>שם / תאריך</th>
+                    <th class="empty_cell">ציון במבחן</th>
+                    <th class="empty_cell">ציון לתעודה</th>
+                </tr>
+                <% students.forEach((student, index) => {%>
+                    <tr>
+                        <td><%= index + 1 %>.</td>
+                        <td class="student-name"><%= student.name %></td>
+                        <td class="empty_cell">&nbsp;</td>
+                        <td class="empty_cell">&nbsp;</td>
+                    </tr>
+                <%  });%>
+            <% }%>
+            </table>
+        </div>
+    </body>
+</html>

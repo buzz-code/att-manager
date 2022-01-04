@@ -17,6 +17,16 @@ const router = genericRoute(groupCtrl, router => {
             await groupCtrl.printAllDiaries(req, res);
         });
 
+    router.route('/print-one-grade')
+        .post(async (req, res) => {
+            await groupCtrl.printOneGrade(req, res);
+        });
+
+    router.route('/print-all-grades')
+        .post(async (req, res) => {
+            await groupCtrl.printAllGrades(req, res);
+        });
+
 });
 
 export default router;

@@ -31,6 +31,14 @@ const addDiaryMetadataToTemplateData = async (templateData, title, diaryDate) =>
     await addCommonMetadataToTemplateData(templateData);
 }
 
+const getGradeFilenameFromGroup = ({ klass, teacher, lesson }, half) => `דוח ציונים ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}_מחצית_${half === 1 ? 'א' : 'ב'}`;
+
+const addGradeMetadataToTemplateData = async (templateData, title, half) => {
+    templateData.title = `${title} - ${templateData.group.klass?.name || ''} - מחצית ${half === 1 ? 'א' : 'ב'}`
+    templateData.half = half;
+    await addCommonMetadataToTemplateData(templateData);
+}
+
 export async function getDiaryStreamByGroupId(groupId, diaryDate) {
     const templatePath = path.join(templatesDir, "diary.ejs");
     const templateData = await getDiaryDataByGroupId(groupId);
@@ -80,4 +88,30 @@ export async function getDiaryStreamByDiaryId(diaryId, groupId) {
     const fileStream = await renderEjsTemplateToStream(templatePath, templateData);
     const filename = getDiaryFilenameFromGroup(templateData.group);
     return { fileStream, filename };
+}
+
+export async function getGradeStreamByGroupId(groupId, half) {
+    const templatePath = path.join(templatesDir, "grade.ejs");
+    const templateData = await getDiaryDataByGroupId(groupId);
+    await addGradeMetadataToTemplateData(templateData, 'דו"ח ציונים', half);
+    const fileStream = await renderEjsTemplateToStream(templatePath, templateData);
+    const filename = getGradeFilenameFromGroup(templateData.group, half);
+    return { fileStream, filename };
+}
+
+export async function getGradeMergedPdfStreamByGroups(groups, half) {
+    var merger = new PDFMerger();
+
+    for (const group of groups) {
+        const { fileStream, filename } = await getGradeStreamByGroupId(group.id, half);
+        const filePath = temp.path({ prefix: filename, suffix: '.pdf' });
+        await fs.promises.writeFile(filePath, await streamToBuffer(fileStream));
+        merger.add(filePath);
+    }
+
+    const tempPath = temp.path({ suffix: '.pdf' });
+    await merger.save(tempPath);
+    const fileStream = fs.createReadStream(tempPath);
+
+    return { fileStream, filename: 'ציונים' };
 }
