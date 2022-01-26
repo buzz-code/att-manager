@@ -9,7 +9,7 @@ import genericController, { applyFilters, fetchPage, fetchPagePromise } from '..
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
 import { fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
-import { getDiaryStreamByDiaryId } from '../utils/printHelper';
+import { getDiaryMergedPdfStreamByDiaries, getDiaryStreamByDiaryId } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
 import { getListFromTable } from '../../common-modules/server/utils/common';
 
@@ -98,6 +98,26 @@ export async function saveDiaryData(req, res) {
 export async function printOneDiary(req, res) {
     const { body: { id, group_id } } = req;
     const { fileStream, filename } = await getDiaryStreamByDiaryId(id, group_id);
+    downloadFileFromStream(fileStream, filename, 'pdf', res);
+}
+
+/**
+ * Print All Diaries
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+ export async function printAllDiaries(req, res) {
+    const { body: { filters } } = req;
+    const dbQuery = getFindAllQuery(req.currentUser.id, JSON.stringify(filters));
+    const { data, total } = await fetchPagePromise({ dbQuery }, { page: 0, pageSize: 100 });
+    if (total > 100) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: 'לא ניתן להדפיס יותר מ100 יומנים במקביל'
+        });
+    }
+    const { fileStream, filename } = await getDiaryMergedPdfStreamByDiaries(data);
     downloadFileFromStream(fileStream, filename, 'pdf', res);
 }
 

@@ -95,6 +95,23 @@ export async function getDiaryStreamByDiaryId(diaryId, groupId) {
     return { fileStream, filename };
 }
 
+export async function getDiaryMergedPdfStreamByDiaries(diaries) {
+    var merger = new PDFMerger();
+
+    for (const diary of diaries) {
+        const { fileStream, filename } = await getDiaryStreamByDiaryId(diary.id, diary.group_id);
+        const filePath = temp.path({ prefix: filename, suffix: '.pdf' });
+        await fs.promises.writeFile(filePath, await streamToBuffer(fileStream));
+        merger.add(filePath);
+    }
+
+    const tempPath = temp.path({ suffix: '.pdf' });
+    await merger.save(tempPath);
+    const fileStream = fs.createReadStream(tempPath);
+
+    return { fileStream, filename: 'יומנים' };
+}
+
 export async function getGradeStreamByGroupId(groupId, half) {
     const templatePath = path.join(templatesDir, "grade.ejs");
     const templateData = await getDiaryDataByGroupId(groupId);

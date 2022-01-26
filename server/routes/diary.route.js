@@ -23,6 +23,11 @@ const router = genericRoute(diaryCtrl, router => {
             await diaryCtrl.printOneDiary(req, res);
         });
 
+    router.route('/print-all-diaries')
+        .post(async (req, res) => {
+            await diaryCtrl.printAllDiaries(req, res);
+        });
+
     router.route('/report-by-dates')
         .get((req, res) => {
             diaryCtrl.reportByDates(req, res);
