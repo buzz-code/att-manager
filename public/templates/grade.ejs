@@ -84,15 +84,17 @@
                 <tr>
                     <th> </th>
                     <th>שם / תאריך</th>
-                    <th class="empty_cell">ציון במבחן</th>
-                    <th class="empty_cell">ציון לתעודה</th>
+                    <% headers.forEach((header) => {%>
+                        <th class="empty_cell"><%= header %></td>
+                    <%  });%>
                 </tr>
                 <% students.forEach((student, index) => {%>
                     <tr>
                         <td><%= index + 1 %>.</td>
                         <td class="student-name"><%= student.name %></td>
-                        <td class="empty_cell">&nbsp;</td>
-                        <td class="empty_cell">&nbsp;</td>
+                        <% headers.forEach((header) => {%>
+                            <td class="empty_cell">&nbsp;</td>
+                        <%  });%>
                     </tr>
                 <%  });%>
             <% }%>

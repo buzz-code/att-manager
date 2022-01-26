@@ -36,6 +36,11 @@ const getGradeFilenameFromGroup = ({ klass, teacher, lesson }, half) => `דוח 
 const addGradeMetadataToTemplateData = async (templateData, title, half) => {
     templateData.title = `${title} - ${templateData.group.klass?.name || ''} - מחצית ${half === 1 ? 'א' : 'ב'}`
     templateData.half = half;
+    if (half === 1) {
+        templateData.headers = ['ציון במבחן', 'ציון לתעודה'];
+    } else {
+        templateData.headers = ['ציון לתעודה באחוזים','ציוני מטלה א','ציוני מטלה ב','ציוני מבחנים מחצית א','ציוני מבחנים מחצית ב', 'נוכחות (לשימוש המשרד)'];
+    }
     await addCommonMetadataToTemplateData(templateData);
 }
 
