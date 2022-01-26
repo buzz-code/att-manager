@@ -39,7 +39,7 @@ const DiariesContainer = ({ entity, title }) => {
     dispatch(crudAction.download(entity, 'POST', 'print-one-diary', { id: rowData.id, group_id: rowData.group_id }));
   }, [entity]);
   const handleOpenDiary = useCallback((e, rowData) => {
-    history.push('/diary-edit/' + rowData.group_id + '/' + rowData.id);
+    window.open('/diary-edit/' + rowData.group_id + '/' + rowData.id, '_blank');
   }, []);
 
   const columns = useMemo(() => getColumns(), []);
