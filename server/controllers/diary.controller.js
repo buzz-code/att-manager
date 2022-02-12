@@ -335,3 +335,32 @@ export async function getDiaryLessons(req, res) {
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
 }
+
+export async function getDiaryLessonsTotal(req, res) {
+    const dbQuery = new Student()
+        .where({ 'students.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
+            qb.join('diaries')
+            qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
+            qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+        });
+    applyFilters(dbQuery, req.query.filters);
+    const countQuery = dbQuery.clone().query()
+        .countDistinct({ count: ['students.id'] })
+        .then(res => res[0].count);
+    dbQuery.query(qb => {
+        qb.groupBy('students.id')
+        qb.select({
+            student_tz: 'students.tz',
+            student_name: 'students.name',
+            student_base_klass: 'student_base_klass.klass_name',
+        })
+        qb.count({
+            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),
+            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 1, 1, NULL)'),
+            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 3, 1, NULL)'),
+        })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
+}
