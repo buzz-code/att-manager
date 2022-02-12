@@ -245,7 +245,7 @@ export async function getPivotData(req, res) {
             pivotDict[item.student_tz][key] = 0;
             pivotDict[item.student_tz][key + '_title'] = (item.lesson_name || 'לא ידוע') + ' ' + (item.teacher_name || 'לא ידוע');
         }
-        if (item.student_att_key) {
+        if (item.student_att_key === 2) {
             pivotDict[item.student_tz][key] += 1;
             pivotDict[item.student_tz].total += 1;
         }
