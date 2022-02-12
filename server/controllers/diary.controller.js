@@ -326,11 +326,11 @@ export async function getDiaryLessons(req, res) {
         })
         qb.count({
             total_lessons: 'diary_lessons.id',
-            abs_count: 'diary_instances.student_att_key',
+            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),
         })
         qb.select({
-            abs_count_num: bookshelf.knex.raw('(count(diary_instances.student_att_key) * 100) / count(diary_lessons.id)'),
-            abs_percents: bookshelf.knex.raw('CONCAT(ROUND((count(diary_instances.student_att_key) * 100) / count(diary_lessons.id), 0), "%")'),
+            abs_count_num: bookshelf.knex.raw('(count(IF(diary_instances.student_att_key = 2, 1, NULL)) * 100) / count(diary_lessons.id)'),
+            abs_percents: bookshelf.knex.raw('CONCAT(ROUND((count(IF(diary_instances.student_att_key = 2, 1, NULL)) * 100) / count(diary_lessons.id), 0), "%")'),
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
