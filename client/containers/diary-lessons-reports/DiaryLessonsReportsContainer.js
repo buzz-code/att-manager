@@ -25,7 +25,7 @@ const getFilters = ({ students, teachers, klasses, lessons }) => [
     list: students,
     idField: 'tz',
   },
-  { field: 'student_base_klass', label: 'כיתת בסיס', type: 'text', operator: 'like' },
+  { field: 'student_base_klass.klass_name', label: 'כיתת בסיס', type: 'text', operator: 'like' },
   {
     field: 'klasses.key',
     label: 'כיתה',
