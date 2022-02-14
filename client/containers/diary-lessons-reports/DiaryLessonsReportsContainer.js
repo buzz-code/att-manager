@@ -12,6 +12,8 @@ const getColumns = ({ }) => [
   { field: 'klass_name', title: 'כיתה' },
   { field: 'lesson_name', title: 'שיעור' },
   { field: 'total_lessons', title: 'סה"כ שיעורים' },
+  { field: 'late_count', title: 'איחורים' },
+  { field: 'approved_abs_count', title: 'מאושרים' },
   { field: 'abs_count', title: 'חיסורים' },
   { field: 'abs_percents', title: 'אחוז חיסורים', columnOrder: 'abs_count_num' },
 ];

@@ -327,6 +327,8 @@ export async function getDiaryLessons(req, res) {
         qb.count({
             total_lessons: 'diary_lessons.id',
             abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),
+            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 1, 1, NULL)'),
+            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 3, 1, NULL)'),
         })
         qb.select({
             abs_count_num: bookshelf.knex.raw('(count(IF(diary_instances.student_att_key = 2, 1, NULL)) * 100) / count(diary_lessons.id)'),
