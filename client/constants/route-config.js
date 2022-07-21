@@ -36,6 +36,7 @@ import StudentAttReport from '../containers/student-att-report/StudentAttReportC
 import PivotReports from '../containers/pivot-reports/PivotReportsContainer';
 import DiaryInstancesReports from '../containers/diary-instances-reports/DiaryInstancesReportsContainer';
 import DiaryLessonsReports from '../containers/diary-lessons-reports/DiaryLessonsReportsContainer';
+import TeacherAttReports from '../containers/teacher-att-reports/TeacherAttReportsContainer';
 import DiaryLessonsTotalReports from '../containers/diary-lessons-total-reports/DiaryLessonsReportsTotalContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
@@ -179,6 +180,13 @@ export default [
       icon: AssignmentTurnedInIcon,
       title: titles.DIARY_LESSONS_TOTAL_REPORTS,
       props: { entity: entities.DIARY_LESSONS_TOTAL_REPORTS, title: titles.DIARY_LESSONS_TOTAL_REPORTS },
+    },
+    {
+      path: '/teacher-att-report',
+      component: TeacherAttReports,
+      icon: AssignmentTurnedInIcon,
+      title: titles.TEACHER_ATT_REPORTS,
+      props: { entity: entities.TEACHER_ATT_REPORTS, title: titles.TEACHER_ATT_REPORTS },
     },
     // {
     //   path: '/report-edit',

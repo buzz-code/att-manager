@@ -5,6 +5,7 @@ import Klass from '../models/klass.model';
 import Teacher from '../models/teacher.model';
 import Lesson from '../models/lesson.model';
 import AttType from '../models/att-type.model';
+import Group from '../models/group.model';
 import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
@@ -108,7 +109,7 @@ export async function printOneDiary(req, res) {
  * @param {object} res
  * @returns {*}
  */
- export async function printAllDiaries(req, res) {
+export async function printAllDiaries(req, res) {
     const { body: { filters } } = req;
     const dbQuery = getFindAllQuery(req.currentUser.id, JSON.stringify(filters));
     const { data, total } = await fetchPagePromise({ dbQuery }, { page: 0, pageSize: 100 });
@@ -362,6 +363,36 @@ export async function getDiaryLessonsTotal(req, res) {
             abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),
             late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 1, 1, NULL)'),
             approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 3, 1, NULL)'),
+        })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
+}
+
+export async function getTeacherAttReport(req, res) {
+    const dbQuery = new Group()
+        .where({ 'groups.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.innerJoin('diaries', 'diaries.group_id', 'groups.id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
+        });
+    applyFilters(dbQuery, req.query.filters);
+    const countQuery = dbQuery.clone().query()
+        .countDistinct({ count: ['groups.id'] })
+        .then(res => res[0].count);
+    dbQuery.query(qb => {
+        qb.groupBy('groups.id')
+        qb.select({
+            teacher_name: 'teachers.name',
+            klass_name: 'klasses.name',
+            lesson_name: 'lessons.name',
+        })
+        qb.count({
+            total_lessons: 'diary_lessons.id',
+            teacher_lessons_count: bookshelf.knex.raw('IF(diary_lessons.is_substitute is null, 1, NULL)'),
+            teacher_lessons_abs_count: bookshelf.knex.raw('IF(diary_lessons.is_substitute = 1, 1, NULL)'),
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);

@@ -53,6 +53,11 @@ const router = genericRoute(diaryCtrl, router => {
             await diaryCtrl.getDiaryLessonsTotal(req, res);
         });
 
+    router.route('/get-teacher-att-report')
+        .get(async (req, res) => {
+            await diaryCtrl.getTeacherAttReport(req, res);
+        });
+
     router.route('/:reportId/export-pdf')
         .post((req, res) => {
             exportPdf(req, res);
