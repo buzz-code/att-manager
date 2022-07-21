@@ -278,10 +278,10 @@ export async function getAllDiaryInstances(req, res) {
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
-        .countDistinct({ count: ['diary_instances.id'] })
+        .countDistinct({ count: ['diary_instances.id', 'att_types.name'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
-        qb.groupBy('diary_instances.id')
+        qb.groupBy('diary_instances.id', 'att_types.name')
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
