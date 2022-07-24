@@ -1,8 +1,8 @@
 import moment from 'moment';
-import { getJewishDate, formatJewishDateHebrew } from 'jewish-dates-core';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
 import { getAttTypesByUserId } from './queryHelper';
+import { formatJewishDates, getDatesFromDiaryData, getSubtituteFromDiaryData } from '../../common-modules/server/utils/diary';
 
 export const processAndValidateData = (user_id, data, dates, lessons, isSubstitute) => {
     const diaryLessons = {};
@@ -70,8 +70,8 @@ export const saveData = async (user_id, group_id, diary_id, dataToSave) => {
 }
 
 export function fillDiaryData(diaryData, groupData) {
-    groupData.dates = Object.fromEntries(diaryData.map(({ lesson_key, lesson_date }) => ([lesson_key, lesson_date])));
-    groupData.isSubstitute = Object.fromEntries(diaryData.map(({ lesson_key, is_substitute }) => ([lesson_key, is_substitute])));
+    groupData.dates = getDatesFromDiaryData(diaryData);
+    groupData.isSubstitute = getSubtituteFromDiaryData(diaryData);
 
     const studentDict = {};
     groupData.students.forEach(student => studentDict[student.tz] = student);
@@ -87,20 +87,14 @@ export async function fillDiaryDataForPrint(diaryData, groupData) {
 
     groupData.isFilled = true;
 
-    for (const lesson of groupData.lessons) {
-        if (groupData.dates[lesson]) {
-            groupData.dates[lesson] = formatJewishDateHebrew(getJewishDate(new Date(groupData.dates[lesson])));
-        }
-    }
+    formatJewishDates(groupData);
 
     const attTypes = await getAttTypesByUserId(groupData.group.user_id);
     const attTypesDict = {};
     attTypes.forEach(item => attTypesDict[item.key] = item.name);
     for (const student of groupData.students) {
-        for (const lesson of groupData.lessons) {
-            if (student[lesson]) {
-                student[lesson] = attTypesDict[student[lesson]];
-            }
+        for (const lesson in student) {
+            student[lesson] = attTypesDict[student[lesson]] || student[lesson];
         }
     }
 }
