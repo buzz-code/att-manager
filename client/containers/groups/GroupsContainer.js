@@ -9,13 +9,13 @@ const getColumns = ({ klasses, teachers, lessons }) => [
   { field: 'klass_id', title: 'כיתה', columnOrder: 'klasses.name', ...getPropsForAutoComplete('klass_id', klasses, 'key') },
   { field: 'teacher_id', title: 'מורה', columnOrder: 'teachers.name', ...getPropsForAutoComplete('teacher_id', teachers, 'tz') },
   { field: 'lesson_id', title: 'שיעור', columnOrder: 'lessons.name', ...getPropsForAutoComplete('lesson_id', lessons, 'key') },
+  { field: 'day_count', title: 'מספר ימים', type: 'numeric' },
   { field: 'lesson_count', title: 'מספר שיעורים', type: 'numeric' },
 ];
 const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'klasses.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'teachers.tz', label: 'מורה', type: 'list', operator: 'eq', list: teachers, idField: 'tz' },
   { field: 'lessons.key', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
-  { field: 'lesson_count', label: 'מספר שיעורים', type: 'number', operator: 'like' },
 ];
 
 const GroupsContainer = ({ entity, title }) => {
