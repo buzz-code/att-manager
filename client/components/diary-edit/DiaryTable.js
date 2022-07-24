@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
 const DiaryTable = ({ diaryData, handleSave }) => {
     const classes = useStyles();
 
-    const lessons = diaryData.groupData.lessons;
+    const { lessons } = diaryData.groupData;
     const [data, setData] = React.useState(diaryData.groupData.students);
     const [dates, setDates] = React.useState(diaryData.groupData.dates || {});
     const [isSubstitute, setIsSubstitute] = React.useState(diaryData.groupData.isSubstitute || {});
@@ -109,7 +109,7 @@ const DiaryTable = ({ diaryData, handleSave }) => {
         setIsSubstitute(old => ({ ...old, [columnId]: value }));
     }, [setIsSubstitute]);
     const saveData = () => {
-        handleSave(data, dates, lessons, isSubstitute);
+        handleSave(data, dates, isSubstitute);
     }
 
     return <>

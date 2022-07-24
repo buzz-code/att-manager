@@ -32,8 +32,8 @@ const DiaryEditContainer = ({ entity }) => {
 
   const isDiaryDataValid = useMemo(() => diaryData && diaryData.groupData.group.id == groupId && (!diaryId || diaryData.groupData.diaryId == diaryId), [diaryData, groupId]);
 
-  const handleSave = useCallback((data, dates, lessons, isSubstitute) => {
-    dispatch(crudAction.customHttpRequest(entity, 'POST', 'save-diary-data', { groupId: Number(groupId), diaryId: Number(diaryId), data, dates, lessons, isSubstitute }));
+  const handleSave = useCallback((data, dates, isSubstitute) => {
+    dispatch(crudAction.customHttpRequest(entity, 'POST', 'save-diary-data', { groupId: Number(groupId), diaryId: Number(diaryId), data, dates, isSubstitute }));
   }, [dispatch, entity, groupId]);
 
   return (

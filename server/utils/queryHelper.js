@@ -6,6 +6,7 @@ import StudentKlass from "../models/student-klass.model";
 import Lesson from "../models/lesson.model";
 import Group from "../models/group.model";
 import Diary from "../models/diary.model";
+import { getLessonsByLessonCount } from "../../common-modules/server/utils/diary";
 
 export function getUserByPhone(phone_number) {
     return new User().where({ phone_number })
@@ -61,7 +62,7 @@ export async function getDiaryDataByGroupId(group_id) {
         .fetch({ withRelated: ['klass', 'teacher', 'lesson'] })
         .then(res => res.toJSON());
     const students = await getStudentsByUserIdAndKlassId(group.user_id, group.klass_id);
-    const lessons = [...Array(group.lesson_count)].map((_, index) => `lesson_date_${index + 1}`);
+    const lessons = getLessonsByLessonCount(group.lesson_count);
 
     return {
         group,

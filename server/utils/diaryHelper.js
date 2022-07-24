@@ -2,10 +2,12 @@ import moment from 'moment';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
 import { getAttTypesByUserId } from './queryHelper';
-import { formatJewishDates, getDatesFromDiaryData, getSubtituteFromDiaryData } from '../../common-modules/server/utils/diary';
+import { formatJewishDates, getDatesFromDiaryData, getLessonsByLessonCount, getSubtituteFromDiaryData } from '../../common-modules/server/utils/diary';
 
-export const processAndValidateData = (user_id, data, dates, lessons, isSubstitute) => {
+export const processAndValidateData = (user_id, group, data, dates, isSubstitute) => {
+    const lessons = getLessonsByLessonCount(group.lesson_count);
     const diaryLessons = {};
+
     for (const student of data) {
         for (const lesson of lessons) {
             if (student[lesson] && !dates[lesson]) {
