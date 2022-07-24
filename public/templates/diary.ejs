@@ -12,10 +12,10 @@
 
             <table>
             <% if (students.length > 0) { %>
-                <%- include('diary-table-header', { isFilled, lessons, dates, isSubstitute }); %>
+                <%- include('diary-table-header', { isFilled, days, dates, isSubstitute }); %>
 
                 <% students.forEach((student, index) => { %>
-                    <%- include('diary-table-row', { index, isFilled, student, lessons, dates }); %>
+                    <%- include('diary-table-row', { index, isFilled, student, days, dates }); %>
                 <%  }); %>
             <% }%>
             </table>

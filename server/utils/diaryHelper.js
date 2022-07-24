@@ -2,35 +2,37 @@ import moment from 'moment';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
 import { getAttTypesByUserId } from './queryHelper';
-import { formatJewishDates, getDatesFromDiaryData, getLessonsByLessonCount, getSubtituteFromDiaryData } from '../../common-modules/server/utils/diary';
+import { formatJewishDates, getDatesFromDiaryData, getDaysByLessonCount, getNewLessonKey, getSubtituteFromDiaryData } from '../../common-modules/server/utils/diary';
 
 export const processAndValidateData = (user_id, group, data, dates, isSubstitute) => {
-    const lessons = getLessonsByLessonCount(group.lesson_count);
+    const days = getDaysByLessonCount(group.day_count, group.lesson_count);
     const diaryLessons = {};
 
     for (const student of data) {
-        for (const lesson of lessons) {
-            if (student[lesson] && !dates[lesson]) {
-                throw new Error('חובה לבחור תאריך לשיעור');
-            }
-            if (!dates[lesson]) {
-                continue;
-            }
-            if (!diaryLessons[lesson]) {
-                diaryLessons[lesson] = {
-                    user_id,
-                    lesson_key: lesson,
-                    lesson_date: moment(dates[lesson]).format('YYYY-MM-DD'),
-                    is_substitute: isSubstitute[lesson],
-                    students: []
+        for (const day of days) {
+            for (const lesson of day.lessons) {
+                if (student[lesson] && !dates[day.key]) {
+                    throw new Error('חובה לבחור תאריך לשיעור');
                 }
-            }
-            if (student[lesson]) {
-                diaryLessons[lesson].students.push({
-                    user_id,
-                    student_tz: student.tz,
-                    student_att_key: student[lesson] || null,
-                })
+                if (!dates[day.key]) {
+                    continue;
+                }
+                if (!diaryLessons[lesson]) {
+                    diaryLessons[lesson] = {
+                        user_id,
+                        lesson_key: lesson,
+                        lesson_date: moment(dates[day.key]).format('YYYY-MM-DD'),
+                        is_substitute: isSubstitute[lesson],
+                        students: []
+                    }
+                }
+                if (student[lesson]) {
+                    diaryLessons[lesson].students.push({
+                        user_id,
+                        student_tz: student.tz,
+                        student_att_key: student[lesson] || null,
+                    })
+                }
             }
         }
     }
@@ -79,7 +81,7 @@ export function fillDiaryData(diaryData, groupData) {
     groupData.students.forEach(student => studentDict[student.tz] = student);
     for (const diaryInstance of diaryData) {
         if (studentDict[diaryInstance.student_tz]) {
-            studentDict[diaryInstance.student_tz][diaryInstance.lesson_key] = diaryInstance.student_att_key || '';
+            studentDict[diaryInstance.student_tz][getNewLessonKey(diaryInstance.lesson_key)] = diaryInstance.student_att_key || '';
         }
     }
 }

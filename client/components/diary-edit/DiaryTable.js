@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
 const DiaryTable = ({ diaryData, handleSave }) => {
     const classes = useStyles();
 
-    const { lessons } = diaryData.groupData;
+    const { days } = diaryData.groupData;
     const [data, setData] = React.useState(diaryData.groupData.students);
     const [dates, setDates] = React.useState(diaryData.groupData.dates || {});
     const [isSubstitute, setIsSubstitute] = React.useState(diaryData.groupData.isSubstitute || {});
@@ -122,10 +122,10 @@ const DiaryTable = ({ diaryData, handleSave }) => {
 
         <div className={classes.container}>
             <table className={classes.table}>
-                <TableHeader lessons={lessons} dates={dates} updateDates={updateDates} isSubstitute={isSubstitute} updateIsSubstitute={updateIsSubstitute} classes={classes} />
+                <TableHeader days={days} dates={dates} updateDates={updateDates} isSubstitute={isSubstitute} updateIsSubstitute={updateIsSubstitute} classes={classes} />
                 <tbody>
                     {data.map((item, index) => (
-                        <TableRow key={item.tz} item={item} index={index} lessons={lessons} attTypes={diaryData.attTypes} updateMyData={updateMyData} classes={classes} />
+                        <TableRow key={item.tz} item={item} index={index} days={days} attTypes={diaryData.attTypes} updateMyData={updateMyData} classes={classes} />
                     ))}
                 </tbody>
             </table>
@@ -133,31 +133,33 @@ const DiaryTable = ({ diaryData, handleSave }) => {
     </>;
 }
 
-const TableHeader = React.memo(({ lessons, dates, updateDates, isSubstitute, updateIsSubstitute, classes }) => {
+const TableHeader = React.memo(({ days, dates, updateDates, isSubstitute, updateIsSubstitute, classes }) => {
     return <thead>
         <tr className={classes.tableRow}>
             <th> </th>
             <th>תז</th>
             <th>שם התלמידה</th>
-            {lessons.map((item, index) => (
-                <th key={item}>
-                    <DiaryDateCell columnId={item} updateMyData={updateDates} value={dates[item]} label={'שיעור ' + (index + 1)} className={classes.dateField} iconClassName={classes.clearDateIcon} />
-                    <DiaryCheckboxCell columnId={item} updateMyData={updateIsSubstitute} value={isSubstitute[item]} className={classes.checkboxField} />
+            {days.map((item, index) => (
+                <th key={item.key} colSpan={item.lessons.length}>
+                    <DiaryDateCell columnId={item.key} updateMyData={updateDates} value={dates[item.key]} label={'יום ' + (index + 1)} className={classes.dateField} iconClassName={classes.clearDateIcon} />
+                    <DiaryCheckboxCell columnId={item.key} updateMyData={updateIsSubstitute} value={isSubstitute[item.key]} className={classes.checkboxField} />
                 </th>
             ))}
         </tr>
     </thead>
 });
 
-const TableRow = React.memo(({ item, index, lessons, attTypes, updateMyData, classes }) => {
+const TableRow = React.memo(({ item, index, days, attTypes, updateMyData, classes }) => {
     return <tr className={classes.tableRow}>
         <td>{index + 1}</td>
         <td>{item.tz}</td>
         <td className={classes.stickyTd}>{item.name}</td>
-        {lessons.map((lesson) => (
-            <td key={index + lesson}>
-                <StudentAttCell index={index} columnId={lesson} updateMyData={updateMyData} value={item[lesson]} attTypes={attTypes} className={classes.inputField} />
-            </td>
+        {days.map((day) => (
+            day.lessons.map((lesson) => (
+                <td key={index + lesson}>
+                    <StudentAttCell index={index} columnId={lesson} updateMyData={updateMyData} value={item[lesson]} attTypes={attTypes} className={classes.inputField} />
+                </td>
+            ))
         ))}
     </tr>
 

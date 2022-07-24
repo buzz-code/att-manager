@@ -8,7 +8,7 @@ import AttType from '../models/att-type.model';
 import Group from '../models/group.model';
 import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
-import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId } from '../utils/queryHelper';
+import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId, getGroupById } from '../utils/queryHelper';
 import { fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
 import { getDiaryMergedPdfStreamByDiaries, getDiaryStreamByDiaryId } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
@@ -75,7 +75,7 @@ export async function saveDiaryData(req, res) {
     const { body: { groupId, diaryId, data, dates, isSubstitute } } = req;
 
     try {
-        const group = await new Group().where({ id: groupId });
+        const group = await getGroupById(groupId);
         const dataToSave = processAndValidateData(req.currentUser.id, group, data, dates, isSubstitute);
         await saveData(req.currentUser.id, groupId, diaryId, dataToSave);
     } catch (e) {
