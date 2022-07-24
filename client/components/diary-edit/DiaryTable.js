@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
     dateField: {
         '& .selectedDate': {
-            width: 79,
+            minWidth: 79,
             fontSize: 10,
             padding: 1,
             lineHeight: '1rem',
