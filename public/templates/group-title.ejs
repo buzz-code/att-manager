@@ -1,0 +1,17 @@
+<div class="header-wrapper">
+    <% if (group.klass) { %>
+        <h3>כיתה: 
+            <span class="value"><%= group.klass.name %></span>
+        </h3>
+    <% } %>
+    <% if (group.teacher) { %>
+        <h3>מורה: 
+            <span class="value"><%= group.teacher.name %></span>
+        </h3>
+    <% } %>
+    <% if (group.lesson) { %>
+        <h3>שיעור: 
+            <span class="value"><%= group.lesson.name %></span>
+        </h3>
+    <% } %>
+</div>

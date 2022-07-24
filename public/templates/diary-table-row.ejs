@@ -1,0 +1,16 @@
+<tr>
+    <td><%= index + 1 %>.</td>
+    <% if (isFilled) { %>
+        <td class="student-name"><%= student.tz %></td>
+    <% } %>
+    <td class="student-name"><%= student.name %></td>
+    <% lessons.forEach((lesson) => {%>
+        <% if (isFilled) { %>
+            <% if (dates[lesson]) { %>
+                <td class="empty_cell"><%= student[lesson] || ' ' %></td>
+            <% } %>
+        <% } else { %>
+            <td class="empty_cell">&nbsp;</td>
+        <% } %>
+    <% }) %>
+</tr>
