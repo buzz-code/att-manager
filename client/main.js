@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import { indigo } from '@material-ui/core/colors';
 import { heIL } from '@material-ui/core/locale';
 import { create } from 'jss';
@@ -17,7 +17,7 @@ const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 
 const mountNode = document.getElementById('root');
 
-const theme = createMuiTheme(
+const theme = createTheme(
   {
     typography: {
       useNextVariants: true,
