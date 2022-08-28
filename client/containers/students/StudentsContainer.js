@@ -7,6 +7,7 @@ const getColumns = () => [
   { field: 'tz', title: 'תעודת זהות' },
   { field: 'name', title: 'שם' },
   { field: 'address', title: 'כתובת' },
+  { field: 'city', title: 'עיר' },
   { field: 'phone', title: 'טלפון בית' },
   { field: 'mother_phone', title: 'נייד אם' },
   { field: 'father_phone', title: 'נייד אב' },
@@ -18,6 +19,7 @@ const getFilters = () => [
   { field: 'tz', label: 'תעודת זהות', type: 'text', operator: 'like' },
   { field: 'name', label: 'שם', type: 'text', operator: 'like' },
   { field: 'address', label: 'כתובת', type: 'text', operator: 'like' },
+  { field: 'city', label: 'עיר', type: 'text', operator: 'like' },
   { field: 'phone', label: 'טלפון בית', type: 'text', operator: 'like' },
   { field: 'school_klass', label: 'כיתת תיכון', type: 'text', operator: 'like' },
 ];
