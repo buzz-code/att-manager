@@ -4,11 +4,15 @@ import { getJewishDate, formatJewishDateHebrew } from 'jewish-dates-core';
 
 import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
+import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
+
+import { yearsList } from '../../../server/utils/listHelper';
 
 const getColumns = ({ }) => [
   { field: 'student_tz', title: 'תז תלמידה', columnOrder: 'students.tz' },
   { field: 'student_name', title: 'תלמידה', columnOrder: 'students.name' },
   { field: 'student_base_klass', title: 'כיתת בסיס', columnOrder: 'students.name' },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
   { field: 'teacher_name', title: 'מורה', columnOrder: 'teachers.name' },
   { field: 'klass_name', title: 'כיתה', columnOrder: 'klasses.name' },
   { field: 'lesson_name', title: 'שיעור', columnOrder: 'lessons.name' },
@@ -59,6 +63,7 @@ const getFilters = ({ students, teachers, klasses, lessons, attTypes }) => [
   },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
 ];
 
 const DiaryInstancesReportsContainer = ({ entity, title }) => {

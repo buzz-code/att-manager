@@ -139,21 +139,20 @@ export async function reportByDates(req, res) {
             qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
-            qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz',)
-            qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses.klass_id')
+            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
             qb.whereNotNull('diary_instances.student_att_key')
-            qb.where('klasses2.klass_type_id', 1)
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
-        .countDistinct({ count: ['students.id'] })
+        .countDistinct({ count: ['students.id', 'student_base_klass.year'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
-        qb.groupBy('students.id')
+        qb.groupBy('students.id', 'student_base_klass.year')
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
-            student_base_klass: bookshelf.knex.raw('GROUP_CONCAT(DISTINCT(klasses2.name) SEPARATOR ", ")'),
+            student_base_klass: 'student_base_klass.klass_name',
+            year: 'student_base_klass.year',
             absences_1: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 1, diary_instances.student_att_key, null))'),
             absences_2: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 2, diary_instances.student_att_key, null))'),
             absences_3: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 3, diary_instances.student_att_key, null))'),
@@ -183,7 +182,7 @@ export async function getPivotData(req, res) {
     if (req.query.filters) {
         const filtersObj = JSON.parse(req.query.filters);
         for (const filter of Object.values(filtersObj)) {
-            if (filter.field.startsWith('students')) {
+            if (filter.field.startsWith('student')) {
                 studentFilters.push(filter);
             } else if (filter.field.startsWith('klasses')) {
                 studentFilters.push(filter);
@@ -199,13 +198,12 @@ export async function getPivotData(req, res) {
         .query(qb => {
             qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz')
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
-            qb.leftJoin({ student_klasses2: 'student_klasses' }, 'student_klasses2.student_tz', 'students.tz',)
-            qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses2.klass_id')
-            qb.where('klasses2.klass_type_id', 1)
-            qb.groupBy('students.id')
+            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
+            qb.groupBy('students.id', 'student_base_klass.year')
             qb.distinct('students.tz', 'students.name')
             qb.select({
-                student_base_klass: bookshelf.knex.raw('GROUP_CONCAT(DISTINCT(klasses2.name) SEPARATOR ", ")'),
+                student_base_klass: 'student_base_klass.klass_name',
+                year: 'student_base_klass.year',
             })
         });
 
@@ -273,10 +271,8 @@ export async function getAllDiaryInstances(req, res) {
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('att_types', 'att_types.key', 'diary_instances.student_att_key')
-            qb.leftJoin('student_klasses', 'student_klasses.student_tz', 'students.tz',)
-            qb.leftJoin({ klasses2: 'klasses' }, 'klasses2.key', 'student_klasses.klass_id')
+            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
             qb.whereNotNull('diary_instances.student_att_key')
-            qb.where('klasses2.klass_type_id', 1)
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
@@ -287,7 +283,8 @@ export async function getAllDiaryInstances(req, res) {
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
-            student_base_klass: bookshelf.knex.raw('GROUP_CONCAT(DISTINCT(klasses2.name) SEPARATOR ", ")'),
+            student_base_klass: 'student_base_klass.klass_name',
+            year: 'student_base_klass.year',
             teacher_name: 'teachers.name',
             klass_name: 'klasses.name',
             lesson_name: 'lessons.name',
@@ -322,6 +319,7 @@ export async function getDiaryLessons(req, res) {
             student_tz: 'students.tz',
             student_name: 'students.name',
             student_base_klass: 'student_base_klass.klass_name',
+            year: 'student_base_klass.year',
             teacher_name: 'teachers.name',
             klass_name: 'klasses.name',
             lesson_name: 'lessons.name',
@@ -351,14 +349,15 @@ export async function getDiaryLessonsTotal(req, res) {
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
-        .countDistinct({ count: ['students.id'] })
+        .countDistinct({ count: ['students.id', 'student_base_klass.year'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
-        qb.groupBy('students.id')
+        qb.groupBy('students.id', 'student_base_klass.year')
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
             student_base_klass: 'student_base_klass.klass_name',
+            year: 'student_base_klass.year',
         })
         qb.count({
             abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),

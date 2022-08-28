@@ -8,6 +8,8 @@ import {
   getPropsForAutoComplete,
 } from '../../../common-modules/client/utils/formUtil';
 
+import { yearsList } from '../../../server/utils/listHelper';
+
 const getColumns = ({ students }, data) => [
   {
     field: 'tz',
@@ -16,6 +18,7 @@ const getColumns = ({ students }, data) => [
     ...getPropsForAutoComplete('tz', students, 'tz'),
   },
   { field: 'student_base_klass', title: 'כיתת בסיס', sorting: false },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
   ...getColumnsForPivot(data),
   { field: 'total', title: 'סה"כ', sorting: false },
 ];
@@ -53,6 +56,7 @@ const getFilters = ({ students, teachers, klasses, lessons }) => [
     list: lessons,
     idField: 'key',
   },
+  { field: 'student_klasses.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
   { field: 'lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
 ];
