@@ -27,6 +27,11 @@ const router = genericRoute(groupCtrl, router => {
             await groupCtrl.printAllGrades(req, res);
         });
 
+    router.route('/excel-one-grade')
+        .post(async (req, res) => {
+            await groupCtrl.excelOneGrade(req, res);
+        });
+
 });
 
 export default router;

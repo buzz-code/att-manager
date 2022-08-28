@@ -12,7 +12,7 @@ import { fillDiaryDataForPrint } from './diaryHelper';
 
 temp.track();
 
-const templatesDir = path.join(__dirname, '..', '..', 'public', 'templates');
+export const templatesDir = path.join(__dirname, '..', '..', 'public', 'templates');
 
 const addCommonMetadataToTemplateData = async (templateData) => {
     templateData.font = 'data:font/truetype;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'fonts', 'ELEGANTIBOLD.TTF'), { encoding: 'base64' });

@@ -7,6 +7,7 @@ import genericController, { applyFilters, fetchPage, fetchPagePromise } from '..
 import { getListFromTable } from '../../common-modules/server/utils/common';
 import { getDiaryStreamByGroupId, getDiaryMergedPdfStreamByGroups, getGradeStreamByGroupId, getGradeMergedPdfStreamByGroups } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
+import { getGradeExcelStreamByGroupId } from '../utils/excelHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Group);
 
@@ -104,4 +105,10 @@ export async function printAllGrades(req, res) {
     }
     const { fileStream, filename } = await getGradeMergedPdfStreamByGroups(data, half);
     downloadFileFromStream(fileStream, filename, 'pdf', res);
+}
+
+export async function excelOneGrade(req, res) {
+    const { body: { id } } = req;
+    const { fileStream, filename } = await getGradeExcelStreamByGroupId(id);
+    downloadFileFromStream(fileStream, filename, 'xlsx', res);
 }
