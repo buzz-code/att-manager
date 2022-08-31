@@ -14,6 +14,8 @@ const getColumns = () => [
   { field: 'birth_date', title: 'תאריך לידה', type: 'date' },
   { field: 'school_klass', title: 'כיתת תיכון' },
   { field: 'father_name', title: 'שם מלא אב' },
+  { field: 'comment', title: 'הערה' },
+  { field: 'year', title: 'שנה' },
 ];
 const getFilters = () => [
   { field: 'tz', label: 'תעודת זהות', type: 'text', operator: 'like' },
