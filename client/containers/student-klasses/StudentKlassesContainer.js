@@ -16,7 +16,7 @@ const getColumns = ({ students, klasses }) => [
 const getFilters = ({ students, klasses }) => [
   { field: 'students.tz', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
   { field: 'klasses.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
+  { field: 'student_klasses.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
 ];
 
 const StudentKlassesContainer = ({ entity, title }) => {
