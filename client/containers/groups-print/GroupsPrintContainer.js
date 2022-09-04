@@ -22,7 +22,7 @@ const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'lessons.key', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
   { field: 'lesson_count', label: 'מספר שיעורים', type: 'number', operator: 'like' },
   { field: 'diary_date', label: 'תאריך', type: 'date', operator: null },
-  { field: 'gropus.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
+  { field: 'groups.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
 ];
 const getActions = (handlePrintAll, handlePrintOne, handleOpenDiary) => [
   {
