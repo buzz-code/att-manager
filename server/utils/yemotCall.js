@@ -2,6 +2,7 @@ import { CallBase } from "../../common-modules/server/utils/callBase";
 import format from 'string-format';
 import * as queryHelper from './queryHelper';
 import AttReport from "../models/att-report.model";
+import { yearsList } from "./listHelper";
 
 export class YemotCall extends CallBase {
     constructor(params, callId, user) {
@@ -119,7 +120,7 @@ export class YemotCall extends CallBase {
     }
 
     async getStudentReports(klass) {
-        const students = await queryHelper.getStudentsByUserIdAndKlassId(this.user.id, klass.id);
+        const students = await queryHelper.getStudentsByUserIdAndKlassIdAndYear(this.user.id, klass.id, yearsList[yearsList.length - 1].id);
         const types = await queryHelper.getAttTypesForTeacherByUserId(this.user.id);
         const attTypeMessage = types.map(item => format(this.texts.forAttendanceTypeXPressY, item.name, item.key)).join(', ');
         const prevStudentMessage = format(this.texts.forAttendanceTypeXPressY, this.texts.prevStudent, 7);

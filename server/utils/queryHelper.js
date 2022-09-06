@@ -32,8 +32,8 @@ export function getLessonByUserIdAndLessonId(user_id, key) {
         .then(res => res ? res.toJSON() : null);
 }
 
-export function getStudentsByUserIdAndKlassId(user_id, klass_id) {
-    return new StudentKlass().where({ user_id, klass_id })
+export function getStudentsByUserIdAndKlassIdAndYear(user_id, klass_id, year) {
+    return new StudentKlass().where({ user_id, klass_id, year })
         .fetchAll({ withRelated: [{ student: function (query) { query.orderBy('name'); } }] })
         .then(res => res.toJSON())
         .then(res => res.map(item => item.student));
@@ -67,7 +67,7 @@ export async function getDiaryDataByGroupId(group_id) {
     const group = await new Group().where({ id: group_id })
         .fetch({ withRelated: ['klass', 'teacher', 'lesson'] })
         .then(res => res.toJSON());
-    const students = await getStudentsByUserIdAndKlassId(group.user_id, group.klass_id);
+    const students = await getStudentsByUserIdAndKlassIdAndYear(group.user_id, group.klass_id, group.year);
     const days = getDaysByLessonCount(group.day_count, group.lesson_count);
 
     return {
