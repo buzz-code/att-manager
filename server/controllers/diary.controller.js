@@ -182,7 +182,11 @@ export async function getPivotData(req, res) {
     if (req.query.filters) {
         const filtersObj = JSON.parse(req.query.filters);
         for (const filter of Object.values(filtersObj)) {
-            if (filter.field.startsWith('student')) {
+            if (filter.field == 'student_klasses.year') {
+                studentFilters.push(filter);
+                studentFilters.push({ ...filter, field: 'student_base_klass.year' });
+                reportFilters.push({ ...filter, field: 'groups.year' });
+            } else if (filter.field.startsWith('student')) {
                 studentFilters.push(filter);
             } else if (filter.field.startsWith('klasses')) {
                 studentFilters.push(filter);
