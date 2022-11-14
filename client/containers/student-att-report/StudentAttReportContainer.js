@@ -22,7 +22,7 @@ const getFilters = ({ students, klasses }) => [
   { field: 'student_base_klass', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
+  { field: 'groups.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
 ];
 
 const StudentAttReportContainer = ({ entity, title }) => {
