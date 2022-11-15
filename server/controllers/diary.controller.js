@@ -25,7 +25,10 @@ function getFindAllQuery(user_id, filters) {
             qb.leftJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.leftJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.select('diaries.*')
-            qb.select({ group_name: bookshelf.knex.raw('CONCAT_WS(" ", klasses.name, teachers.name, lessons.name)') })
+            qb.select({
+                group_name: bookshelf.knex.raw('CONCAT_WS(" ", klasses.name, teachers.name, lessons.name)'),
+                year: 'groups.year'
+            })
         });
     applyFilters(dbQuery, filters);
     return dbQuery;
@@ -275,7 +278,7 @@ export async function getAllDiaryInstances(req, res) {
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('att_types', 'att_types.key', 'diary_instances.student_att_key')
-            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
+            qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
             qb.whereNotNull('diary_instances.student_att_key')
         });
     applyFilters(dbQuery, req.query.filters);
