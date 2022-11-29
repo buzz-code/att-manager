@@ -395,6 +395,7 @@ export async function getTeacherAttReport(req, res) {
             teacher_name: 'teachers.name',
             klass_name: 'klasses.name',
             lesson_name: 'lessons.name',
+            year: 'groups.year',
         })
         qb.count({
             total_lessons: 'diary_lessons.id',

@@ -3,11 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
+import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
+
+import { yearsList } from '../../../server/utils/listHelper';
 
 const getColumns = ({ }) => [
   { field: 'teacher_name', title: 'מורה' },
   { field: 'klass_name', title: 'כיתה' },
   { field: 'lesson_name', title: 'שיעור' },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
   { field: 'teacher_lessons_count', title: 'שיעורי המורה' },
   { field: 'teacher_lessons_abs_count', title: 'שיעורי מילוי מקום' },
   { field: 'total_lessons', title: 'סה"כ שיעורים' },
@@ -39,6 +43,7 @@ const getFilters = ({ teachers, klasses, lessons }) => [
   },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
+  { field: 'groups.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
 ];
 
 const TeacherAttReportsContainer = ({ entity, title }) => {
