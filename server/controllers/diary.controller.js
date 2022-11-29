@@ -147,10 +147,10 @@ export async function reportByDates(req, res) {
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
-        .countDistinct({ count: ['students.id', 'student_base_klass.year'] })
+        .countDistinct({ count: ['students.id', 'student_base_klass.year', 'student_base_klass.klass_name'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
-        qb.groupBy('students.id', 'student_base_klass.year')
+        qb.groupBy('students.id', 'student_base_klass.year', 'student_base_klass.klass_name')
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
