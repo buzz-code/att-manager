@@ -143,7 +143,7 @@ export async function reportByDates(req, res) {
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
-            qb.whereNotNull('diary_instances.student_att_key')
+            qb.where('diary_instances.student_att_key', '=', 2)
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
