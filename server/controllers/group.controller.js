@@ -108,7 +108,7 @@ export async function printAllGrades(req, res) {
 }
 
 export async function excelOneGrade(req, res) {
-    const { body: { id } } = req;
-    const { fileStream, filename } = await getGradeExcelStreamByGroupId(id);
+    const { body: { id, half } } = req;
+    const { fileStream, filename } = await getGradeExcelStreamByGroupId(id, half);
     downloadFileFromStream(fileStream, filename, 'xlsx', res);
 }

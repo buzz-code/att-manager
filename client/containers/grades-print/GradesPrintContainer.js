@@ -19,7 +19,7 @@ const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'lessons.key', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
   { field: 'groups.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
 ];
-const getActions = (handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2, handleDownloadExcel) => [
+const getActions = (handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2, handleDownloadExcel1, handleDownloadExcel2) => [
   {
     icon: 'print',
     tooltip: 'הדפס הכל מחצית א',
@@ -47,8 +47,14 @@ const getActions = (handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePri
   rowData => ({
     disabled: !rowData.klass_id,
     icon: 'border_all',
-    tooltip: 'הורדת אקסל',
-    onClick: handleDownloadExcel,
+    tooltip: 'הורדת אקסל למחצית א',
+    onClick: handleDownloadExcel1,
+  }),
+  rowData => ({
+    disabled: !rowData.klass_id,
+    icon: 'border_all',
+    tooltip: 'הורדת אקסל למחצית ב',
+    onClick: handleDownloadExcel2,
   }),
 ];
 
@@ -72,13 +78,16 @@ const GradesPrintContainer = ({ entity, title }) => {
   const handlePrintOne2 = useCallback((e, rowData) => {
     dispatch(crudAction.download(entity, 'POST', 'print-one-grade', { id: rowData.id, half: 2 }));
   }, [entity, conditions]);
-  const handleDownloadExcel = useCallback((e, rowData) => {
-    dispatch(crudAction.download(entity, 'POST', 'excel-one-grade', { id: rowData.id }));
+  const handleDownloadExcel1 = useCallback((e, rowData) => {
+    dispatch(crudAction.download(entity, 'POST', 'excel-one-grade', { id: rowData.id, half: 1 }));
+  }, [entity, conditions]);
+  const handleDownloadExcel2 = useCallback((e, rowData) => {
+    dispatch(crudAction.download(entity, 'POST', 'excel-one-grade', { id: rowData.id, half: 2 }));
   }, [entity, conditions]);
 
   const columns = useMemo(() => getColumns(editData || {}), [editData]);
   const filters = useMemo(() => getFilters(editData || {}), [editData]);
-  const actions = useMemo(() => getActions(handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2, handleDownloadExcel), [handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2]);
+  const actions = useMemo(() => getActions(handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2, handleDownloadExcel1, handleDownloadExcel2), [handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2]);
 
   useEffect(() => {
     dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data'));

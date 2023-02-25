@@ -31,17 +31,19 @@ const addDiaryMetadataToTemplateData = async (templateData, title, diaryDate) =>
     await addCommonMetadataToTemplateData(templateData);
 }
 
-const getGradeFilenameFromGroup = ({ klass, teacher, lesson }, half) => `דוח ציונים ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}_מחצית_${half === 1 ? 'א' : 'ב'}`;
+export const getGradeFilenameFromGroup = ({ klass, teacher, lesson }, half) => `דוח ציונים ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}_מחצית_${half === 1 ? 'א' : 'ב'}`;
 
-const addGradeMetadataToTemplateData = async (templateData, title, half) => {
+export const addGradeMetadataToTemplateData = async (templateData, title, half, isPdf = true) => {
     templateData.title = `${title} - ${templateData.group.klass?.name || ''} - מחצית ${half === 1 ? 'א' : 'ב'}`
     templateData.half = half;
     if (half === 1) {
         templateData.headers = ['ציון במבחן', 'ציון לתעודה'];
     } else {
-        templateData.headers = ['ציון לתעודה באחוזים','ציוני מטלה א','ציוני מטלה ב','ציוני מבחנים מחצית א','ציוני מבחנים מחצית ב', 'נוכחות (לשימוש המשרד)'];
+        templateData.headers = ['ציון לתעודה באחוזים', 'ציוני מטלה א', 'ציוני מטלה ב', 'ציוני מבחנים מחצית א', 'ציוני מבחנים מחצית ב', 'נוכחות (לשימוש המשרד)'];
     }
-    await addCommonMetadataToTemplateData(templateData);
+    if (isPdf) {
+        await addCommonMetadataToTemplateData(templateData);
+    }
 }
 
 export async function getDiaryStreamByGroupId(groupId, diaryDate) {
