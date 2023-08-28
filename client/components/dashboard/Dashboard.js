@@ -11,6 +11,7 @@ const statItems = [
   // { id: 'reports', text: 'צפיות', icon: ListAltIcon, color: pink[600], value: 0 },
   { id: 'students5782', text: 'תלמידות תשפ"ב', icon: PeopleIcon, color: cyan[600], value: 0 },
   { id: 'students5783', text: 'תלמידות תשפ"ג', icon: PeopleIcon, color: cyan[600], value: 0 },
+  { id: 'students5784', text: 'תלמידות תשפ"ד', icon: PeopleIcon, color: cyan[600], value: 0 },
   { id: 'teachers', text: 'מורות', icon: SupervisedUserCircleIcon, color: purple[600], value: 0 },
 ];
 
