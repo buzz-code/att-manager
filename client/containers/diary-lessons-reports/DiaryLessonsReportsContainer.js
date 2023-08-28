@@ -5,7 +5,7 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
-import { yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../../server/utils/listHelper';
 
 const getColumns = ({ }) => [
   { field: 'student_tz', title: 'תז תלמידה', columnOrder: 'students.tz' },
@@ -58,7 +58,7 @@ const getFilters = ({ students, teachers, klasses, lessons }) => [
   },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
-  { field: 'student_base_klass.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
+  { field: 'student_base_klass.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
 ];
 
 const DiaryLessonsReportsContainer = ({ entity, title }) => {

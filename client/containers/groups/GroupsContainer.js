@@ -5,7 +5,7 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
-import { yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../../server/utils/listHelper';
 
 const getColumns = ({ klasses, teachers, lessons }) => [
   { field: 'klass_id', title: 'כיתה', columnOrder: 'klasses.name', ...getPropsForAutoComplete('klass_id', klasses, 'key') },
@@ -19,7 +19,7 @@ const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'klasses.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'teachers.tz', label: 'מורה', type: 'list', operator: 'eq', list: teachers, idField: 'tz' },
   { field: 'lessons.key', label: 'שיעור', type: 'list', operator: 'eq', list: lessons, idField: 'key' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: 5783 },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
 ];
 
 const GroupsContainer = ({ entity, title }) => {
