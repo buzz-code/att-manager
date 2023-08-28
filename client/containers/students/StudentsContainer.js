@@ -2,6 +2,9 @@ import moment from 'moment';
 import React, { useCallback, useMemo } from 'react';
 
 import Table from '../../../common-modules/client/components/table/Table';
+import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
+
+import { defaultYear, yearsList } from '../../../server/utils/listHelper';
 
 const getColumns = () => [
   { field: 'tz', title: 'תעודת זהות' },
@@ -15,7 +18,7 @@ const getColumns = () => [
   { field: 'school_klass', title: 'כיתת תיכון' },
   { field: 'father_name', title: 'שם מלא אב' },
   { field: 'comment', title: 'הערה' },
-  { field: 'year', title: 'שנה' },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
 ];
 const getFilters = () => [
   { field: 'tz', label: 'תעודת זהות', type: 'text', operator: 'like' },
@@ -24,6 +27,7 @@ const getFilters = () => [
   { field: 'city', label: 'עיר', type: 'text', operator: 'like' },
   { field: 'phone', label: 'טלפון בית', type: 'text', operator: 'like' },
   { field: 'school_klass', label: 'כיתת תיכון', type: 'text', operator: 'like' },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
 ];
 
 const StudentsContainer = ({ entity, title }) => {
