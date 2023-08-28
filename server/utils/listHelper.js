@@ -4,4 +4,4 @@ export const yearsList = [
     { id: 5784, name: 'תשפ"ד' },
 ]
 
-export const defaultYear = yearsList.at(-1).id;
+export const defaultYear = yearsList[yearsList.length - 1].id;
