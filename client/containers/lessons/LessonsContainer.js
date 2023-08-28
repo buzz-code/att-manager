@@ -1,14 +1,19 @@
 import React, { useMemo } from 'react';
 
 import Table from '../../../common-modules/client/components/table/Table';
+import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
+
+import { defaultYear, yearsList } from '../../../server/utils/listHelper';
 
 const getColumns = () => [
   { field: 'key', title: 'מזהה' },
   { field: 'name', title: 'שם' },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
 ];
 const getFilters = () => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
   { field: 'name', label: 'שם', type: 'text', operator: 'like' },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
 ];
 
 const LessonsContainer = ({ entity, title }) => {

@@ -5,15 +5,19 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
+import { defaultYear, yearsList } from '../../../server/utils/listHelper';
+
 const getColumns = ({ klassTypes }) => [
   { field: 'key', title: 'מזהה' },
   { field: 'name', title: 'שם' },
   { field: 'klass_type_id', title: 'סוג כיתה', columnOrder: 'klass_types.name', ...getPropsForAutoComplete('klass_type_id', klassTypes) },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
 ];
 const getFilters = ({ klassTypes }) => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
   { field: 'klasses.name', label: 'שם', type: 'text', operator: 'like' },
   { field: 'klass_types.id', label: 'סוג כיתה', type: 'list', operator: 'eq', list: klassTypes, idField: 'id' },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
 ];
 
 const KlassesContainer = ({ entity, title }) => {

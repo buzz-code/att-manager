@@ -8,8 +8,8 @@ const title = 'העלאת קובץ';
 const supportedEntities = [
   { value: entities.TEACHERS, title: titles.TEACHERS, columns: ['tz', 'name', 'phone'] },
   { value: entities.STUDENTS, title: titles.STUDENTS, columns: ['tz', 'name', 'address', 'city', 'phone', 'mother_phone', 'father_phone', 'birth_date', 'school_klass', 'father_name', 'comment', 'year'] },
-  { value: entities.LESSONS, title: titles.LESSONS, columns: ['key', 'name'] },
-  { value: entities.KLASSS, title: titles.KLASSS, columns: ['key', 'name'] },
+  { value: entities.LESSONS, title: titles.LESSONS, columns: ['key', 'name', 'year'] },
+  { value: entities.KLASSS, title: titles.KLASSS, columns: ['key', 'name', 'year'] },
   {
     value: entities.STUDENT_KLASSES,
     title: titles.STUDENT_KLASSES,
