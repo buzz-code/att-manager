@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 
-import { defaultYear, yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../services/yearService';
 
 const getColumns = () => [
   { field: 'student_tz', title: 'מספר תז' },

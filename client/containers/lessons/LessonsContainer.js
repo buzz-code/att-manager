@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import Table from '../../../common-modules/client/components/table/Table';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
-import { defaultYear, yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../services/yearService';
 
 const getColumns = () => [
   { field: 'key', title: 'מזהה' },

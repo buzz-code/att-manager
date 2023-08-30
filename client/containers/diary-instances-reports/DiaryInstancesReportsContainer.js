@@ -6,7 +6,7 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
-import { defaultYear, yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../services/yearService';
 
 const getColumns = ({ }) => [
   { field: 'student_tz', title: 'תז תלמידה', columnOrder: 'students.tz' },

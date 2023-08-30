@@ -5,7 +5,7 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
-import { defaultYear, yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../services/yearService';
 
 const getColumns = ({ klasses, teachers, lessons }) => [
   { field: 'klass_id', title: 'כיתה', columnOrder: 'klasses.name', ...getPropsForAutoComplete('klass_id', klasses, 'key') },

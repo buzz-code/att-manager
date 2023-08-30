@@ -8,7 +8,7 @@ import {
   getPropsForAutoComplete,
 } from '../../../common-modules/client/utils/formUtil';
 
-import { defaultYear, yearsList } from '../../../server/utils/listHelper';
+import { defaultYear, yearsList } from '../../services/yearService';
 
 const getColumns = ({ students }, data) => [
   {
