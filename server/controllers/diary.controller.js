@@ -322,7 +322,7 @@ export async function getDiaryLessons(req, res) {
         .countDistinct({ count: ['students.id', 'groups.id'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
-        qb.groupBy('students.id', 'groups.id')
+        qb.groupBy('students.id', 'groups.id', 'student_base_klass.klass_name', 'student_base_klass.year')
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
