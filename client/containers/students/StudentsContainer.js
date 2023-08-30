@@ -27,7 +27,7 @@ const getFilters = () => [
   { field: 'city', label: 'עיר', type: 'text', operator: 'like' },
   { field: 'phone', label: 'טלפון בית', type: 'text', operator: 'like' },
   { field: 'school_klass', label: 'כיתת תיכון', type: 'text', operator: 'like' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];
 
 const StudentsContainer = ({ entity, title }) => {

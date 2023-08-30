@@ -13,7 +13,7 @@ const getColumns = () => [
 const getFilters = () => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
   { field: 'name', label: 'שם', type: 'text', operator: 'like' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];
 
 const LessonsContainer = ({ entity, title }) => {

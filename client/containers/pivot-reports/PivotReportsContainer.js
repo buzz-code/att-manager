@@ -56,7 +56,7 @@ const getFilters = ({ students, teachers, klasses, lessons }) => [
     list: lessons,
     idField: 'key',
   },
-  { field: 'student_klasses.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
+  { field: 'student_klasses.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
   { field: 'lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
 ];

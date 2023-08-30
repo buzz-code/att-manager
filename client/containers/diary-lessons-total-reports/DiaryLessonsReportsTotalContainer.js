@@ -27,7 +27,7 @@ const getFilters = ({ students }) => [
     idField: 'tz',
   },
   { field: 'student_base_klass.klass_name', label: 'כיתת בסיס', type: 'text', operator: 'like' },
-  { field: 'student_base_klass.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
+  { field: 'student_base_klass.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
 ];

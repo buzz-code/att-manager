@@ -17,7 +17,7 @@ const getFilters = ({ klassTypes }) => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
   { field: 'klasses.name', label: 'שם', type: 'text', operator: 'like' },
   { field: 'klass_types.id', label: 'סוג כיתה', type: 'list', operator: 'eq', list: klassTypes, idField: 'id' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear },
+  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];
 
 const KlassesContainer = ({ entity, title }) => {
