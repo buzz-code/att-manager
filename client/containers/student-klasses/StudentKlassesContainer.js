@@ -11,7 +11,7 @@ const getColumns = ({ students, klasses }) => [
   { field: 'student_tz', title: 'מספר תז', editable: 'never' },
   { field: 'student_tz', title: 'תלמידה', columnOrder: 'students.name', ...getPropsForAutoComplete('student_tz', students, 'tz') },
   { field: 'klass_id', title: 'כיתה', columnOrder: 'klasses.name', ...getPropsForAutoComplete('klass_id', klasses, 'key') },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = ({ students, klasses }) => [
   { field: 'students.tz', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },

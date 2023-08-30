@@ -8,7 +8,7 @@ import { defaultYear, yearsList } from '../../services/yearService';
 const getColumns = () => [
   { field: 'key', title: 'מזהה' },
   { field: 'name', title: 'שם' },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = () => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },

@@ -13,7 +13,7 @@ const getColumns = ({ klasses, teachers, lessons }) => [
   { field: 'lesson_id', title: 'שיעור', columnOrder: 'lessons.name', ...getPropsForAutoComplete('lesson_id', lessons, 'key') },
   { field: 'day_count', title: 'מספר ימים', type: 'numeric' },
   { field: 'lesson_count', title: 'מספר שיעורים', type: 'numeric' },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = ({ klasses, teachers, lessons }) => [
   { field: 'klasses.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },

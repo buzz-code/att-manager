@@ -18,7 +18,7 @@ const getColumns = () => [
   { field: 'school_klass', title: 'כיתת תיכון' },
   { field: 'father_name', title: 'שם מלא אב' },
   { field: 'comment', title: 'הערה' },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = () => [
   { field: 'tz', label: 'תעודת זהות', type: 'text', operator: 'like' },

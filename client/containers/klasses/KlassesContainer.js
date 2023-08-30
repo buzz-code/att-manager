@@ -11,7 +11,7 @@ const getColumns = ({ klassTypes }) => [
   { field: 'key', title: 'מזהה' },
   { field: 'name', title: 'שם' },
   { field: 'klass_type_id', title: 'סוג כיתה', columnOrder: 'klass_types.name', ...getPropsForAutoComplete('klass_type_id', klassTypes) },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
+  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = ({ klassTypes }) => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
