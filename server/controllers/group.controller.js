@@ -8,6 +8,7 @@ import { getListFromTable } from '../../common-modules/server/utils/common';
 import { getDiaryStreamByGroupId, getDiaryMergedPdfStreamByGroups, getGradeStreamByGroupId, getGradeMergedPdfStreamByGroups } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
 import { getGradeExcelStreamByGroupId } from '../utils/excelHelper';
+import { defaultYear } from '../utils/listHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Group);
 
@@ -45,9 +46,9 @@ export async function findAll(req, res) {
  */
 export async function getEditData(req, res) {
     const [klasses, teachers, lessons] = await Promise.all([
-        getListFromTable(Klass, req.currentUser.id, 'key'),
+        getListFromTable(Klass, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
         getListFromTable(Teacher, req.currentUser.id, 'tz'),
-        getListFromTable(Lesson, req.currentUser.id, 'key'),
+        getListFromTable(Lesson, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
     ]);
     res.json({
         error: null,
