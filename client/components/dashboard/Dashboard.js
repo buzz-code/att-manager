@@ -42,7 +42,7 @@ const Dashboard = ({ stats }) => {
         <Grid item lg={3} sm={6} xl={3} xs={12}>
           <Card>
             <CardContent>
-              <FormControl>
+              <FormControl variant="outlined">
                 <InputLabel id='year-selector'>שנה</InputLabel>
                 <Select labelId='year-selector' value={year} label='שנה' onChange={handleYearChange}        >
                   {yearsList.map(item => (
