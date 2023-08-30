@@ -16,13 +16,11 @@ import { defaultYear, yearsList, updateDefaultYear } from '../../services/yearSe
 
 const statItems = [
   // { id: 'reports', text: 'צפיות', icon: ListAltIcon, color: pink[600], value: 0 },
-  { id: 'students5782', text: 'תלמידות תשפ"ב', icon: PeopleIcon, color: cyan[600], value: 0 },
-  { id: 'students5783', text: 'תלמידות תשפ"ג', icon: PeopleIcon, color: cyan[600], value: 0 },
-  { id: 'students5784', text: 'תלמידות תשפ"ד', icon: PeopleIcon, color: cyan[600], value: 0 },
+  { id: 'students', text: 'תלמידות', icon: PeopleIcon, color: cyan[600], value: 0 },
   { id: 'teachers', text: 'מורות', icon: SupervisedUserCircleIcon, color: purple[600], value: 0 },
 ];
 
-const Dashboard = ({ stats }) => {
+const Dashboard = ({ stats, updateData }) => {
   const dashboardItems = useMemo(
     () => statItems.map((item) => ({ ...item, value: stats[item.id] })),
     [stats]
@@ -30,8 +28,10 @@ const Dashboard = ({ stats }) => {
 
   const [year, setYear] = useState(defaultYear);
   const handleYearChange = (e) => {
-    setYear(e.target.value);
-    updateDefaultYear(e.target.value);
+    const year = e.target.value;
+    setYear(year);
+    updateDefaultYear(year);
+    updateData(year);
   }
 
   return (

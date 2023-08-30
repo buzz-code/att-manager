@@ -4,6 +4,7 @@ import StudentKlass from '../models/student-klass.model';
 import Teacher from '../models/teacher.model';
 
 import { getCountFromTable } from '../../common-modules/server/utils/query';
+import { defaultYear } from '../utils/listHelper';
 
 /**
  * Get stats
@@ -13,15 +14,13 @@ import { getCountFromTable } from '../../common-modules/server/utils/query';
  * @returns {*}
  */
 export async function getStats(req, res) {
-    const [reports, students5782, students5783, students5784, teachers] = await Promise.all([
-        getCountFromTable(AttReport, req.currentUser.id),
-        getCountFromTable(StudentKlass, req.currentUser.id, { year: 5782 }, 'student_tz'),
-        getCountFromTable(StudentKlass, req.currentUser.id, { year: 5783 }, 'student_tz'),
-        getCountFromTable(StudentKlass, req.currentUser.id, { year: 5784 }, 'student_tz'),
+    const [reports, students, teachers] = await Promise.all([
+        getCountFromTable(AttReport, req.currentUser.id, { year: req.query.year ?? defaultYear }),
+        getCountFromTable(StudentKlass, req.currentUser.id, { year: req.query.year ?? defaultYear }, 'student_tz'),
         getCountFromTable(Teacher, req.currentUser.id),
     ]);
     res.json({
         error: null,
-        data: { reports, students5782, students5783, students5784, teachers }
+        data: { reports, students, teachers }
     });
 }
