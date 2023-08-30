@@ -90,7 +90,7 @@ const GradesPrintContainer = ({ entity, title }) => {
   const actions = useMemo(() => getActions(handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2, handleDownloadExcel1, handleDownloadExcel2), [handlePrintAll1, handlePrintAll2, handlePrintOne1, handlePrintOne2]);
 
   useEffect(() => {
-    dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data'));
+    dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data', { year: defaultYear }));
   }, []);
 
   return <>

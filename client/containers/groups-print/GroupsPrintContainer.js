@@ -69,7 +69,7 @@ const GroupsContainer = ({ entity, title }) => {
   const actions = useMemo(() => getActions(handlePrintAll, handlePrintOne, handleOpenDiary), [handlePrintAll, handlePrintOne, handleOpenDiary]);
 
   useEffect(() => {
-    dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data'));
+    dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data', { year: defaultYear }));
   }, []);
 
   return <>

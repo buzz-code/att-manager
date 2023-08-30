@@ -63,7 +63,7 @@ const DiariesContainer = ({ entity, title }) => {
   const actions = useMemo(() => getActions(handlePrintAll, handlePrintOne, handleOpenDiary), [handlePrintAll, handlePrintOne, handleOpenDiary]);
 
   useEffect(() => {
-    dispatch(crudAction.customHttpRequest(entity, 'GET', '../groups/get-edit-data'));
+    dispatch(crudAction.customHttpRequest(entity, 'GET', '../groups/get-edit-data', { year: defaultYear }));
   }, []);
 
   return <Table entity={entity} title={title} columns={columns} filters={filters} additionalActions={actions} disableAdd={true} disableUpdate={true} onConditionUpdate={setConditions} />

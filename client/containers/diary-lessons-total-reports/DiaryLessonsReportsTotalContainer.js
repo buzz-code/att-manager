@@ -42,7 +42,7 @@ const DiaryLessonsReportsTotalContainer = ({ entity, title }) => {
   const filters = useMemo(() => getFilters(editData || {}), [editData]);
 
   useEffect(() => {
-    dispatch(crudAction.customHttpRequest(entity, 'GET', '../get-edit-data'));
+    dispatch(crudAction.customHttpRequest(entity, 'GET', '../get-edit-data', { year: defaultYear }));
   }, []);
 
   return (

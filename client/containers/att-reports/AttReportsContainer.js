@@ -5,6 +5,8 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 
+import { defaultYear } from '../../services/yearService';
+
 const getColumns = ({ students, teachers, lessons, attTypes }) => [
   { field: 'student_tz', title: 'תלמידה', columnOrder: 'students.name', ...getPropsForAutoComplete('student_tz', students, 'tz') },
   { field: 'teacher_id', title: 'מורה', columnOrder: 'teachers.name', ...getPropsForAutoComplete('teacher_id', teachers, 'tz') },
@@ -30,7 +32,7 @@ const AttReportsContainer = ({ entity, title }) => {
   const filters = useMemo(() => getFilters(editData || {}), [editData]);
 
   useEffect(() => {
-    dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data'));
+    dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data', { year: defaultYear }));
   }, []);
 
   return <Table entity={entity} title={title} columns={columns} filters={filters} />;
