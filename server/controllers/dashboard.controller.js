@@ -15,7 +15,8 @@ import { defaultYear } from '../utils/listHelper';
  */
 export async function getStats(req, res) {
     const [reports, students, teachers] = await Promise.all([
-        getCountFromTable(AttReport, req.currentUser.id, { year: req.query.year ?? defaultYear }),
+        // getCountFromTable(AttReport, req.currentUser.id, { year: req.query.year ?? defaultYear }),
+        0,
         getCountFromTable(StudentKlass, req.currentUser.id, { year: req.query.year ?? defaultYear }, 'student_tz'),
         getCountFromTable(Teacher, req.currentUser.id),
     ]);
