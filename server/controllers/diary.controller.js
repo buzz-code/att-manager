@@ -14,6 +14,7 @@ import { getDiaryMergedPdfStreamByDiaries, getDiaryStreamByDiaryId } from '../ut
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
 import { getListFromTable } from '../../common-modules/server/utils/common';
 import { defaultYear } from '../utils/listHelper';
+import StudentByYear from '../models/student-by-year.model';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -168,7 +169,7 @@ export async function reportByDates(req, res) {
 
 export async function getEditData(req, res) {
     const [students, klasses, teachers, lessons, attTypes] = await Promise.all([
-        getListFromTable(Student, req.currentUser.id, 'tz'),
+        getListFromTable(StudentByYear, req.currentUser.id, 'tz', { year: req.query.year ?? defaultYear }),
         getListFromTable(Klass, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
         getListFromTable(Teacher, req.currentUser.id, 'tz'),
         getListFromTable(Lesson, req.currentUser.id, 'key'),

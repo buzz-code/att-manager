@@ -6,6 +6,7 @@ import Teacher from '../models/teacher.model';
 import { getListFromTable } from '../../common-modules/server/utils/common';
 import genericController, { applyFilters, fetchPage } from '../../common-modules/server/controllers/generic.controller';
 import { defaultYear } from '../utils/listHelper';
+import StudentByYear from '../models/student-by-year.model';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(AttReport);
 
@@ -39,7 +40,7 @@ export async function findAll(req, res) {
  */
 export async function getEditData(req, res) {
     const [students, teachers, lessons, attTypes] = await Promise.all([
-        getListFromTable(Student, req.currentUser.id, 'tz'),
+        getListFromTable(StudentByYear, req.currentUser.id, 'tz', { year: req.query.year ?? defaultYear }),
         getListFromTable(Teacher, req.currentUser.id, 'tz'),
         getListFromTable(Lesson, req.currentUser.id, 'key'),
         getListFromTable(AttType, req.currentUser.id, 'key'),
