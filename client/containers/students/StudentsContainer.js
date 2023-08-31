@@ -18,7 +18,7 @@ const getColumns = () => [
   { field: 'school_klass', title: 'כיתת תיכון' },
   { field: 'father_name', title: 'שם מלא אב' },
   { field: 'comment', title: 'הערה' },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
+  // { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = () => [
   { field: 'tz', label: 'תעודת זהות', type: 'text', operator: 'like' },
@@ -27,7 +27,7 @@ const getFilters = () => [
   { field: 'city', label: 'עיר', type: 'text', operator: 'like' },
   { field: 'phone', label: 'טלפון בית', type: 'text', operator: 'like' },
   { field: 'school_klass', label: 'כיתת תיכון', type: 'text', operator: 'like' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
+  // { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];
 
 const StudentsContainer = ({ entity, title }) => {

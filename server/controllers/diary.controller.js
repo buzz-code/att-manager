@@ -171,7 +171,7 @@ export async function getEditData(req, res) {
         getListFromTable(Student, req.currentUser.id, 'tz'),
         getListFromTable(Klass, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
         getListFromTable(Teacher, req.currentUser.id, 'tz'),
-        getListFromTable(Lesson, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
+        getListFromTable(Lesson, req.currentUser.id, 'key'),
         getListFromTable(AttType, req.currentUser.id, 'key'),
     ]);
     res.json({

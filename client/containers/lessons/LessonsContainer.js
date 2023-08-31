@@ -8,12 +8,12 @@ import { defaultYear, yearsList } from '../../services/yearService';
 const getColumns = () => [
   { field: 'key', title: 'מזהה' },
   { field: 'name', title: 'שם' },
-  { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
+  // { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
 const getFilters = () => [
   { field: 'key', label: 'מזהה', type: 'text', operator: 'like' },
   { field: 'name', label: 'שם', type: 'text', operator: 'like' },
-  { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
+  // { field: 'year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];
 
 const LessonsContainer = ({ entity, title }) => {
