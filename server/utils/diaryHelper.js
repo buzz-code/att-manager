@@ -22,7 +22,7 @@ export const processAndValidateData = (user_id, group, data, dates, isSubstitute
                         user_id,
                         lesson_key: lesson,
                         lesson_date: moment(dates[day.key]).format('YYYY-MM-DD'),
-                        is_substitute: isSubstitute[lesson],
+                        is_substitute: isSubstitute[day.key],
                         students: []
                     }
                 }
