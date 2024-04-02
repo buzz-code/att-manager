@@ -9,7 +9,7 @@ import Group from '../models/group.model';
 import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId, getGroupById } from '../utils/queryHelper';
-import { fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
+import { STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY, STUDENT_LATE_KEY, fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
 import { getDiaryMergedPdfStreamByDiaries, getDiaryStreamByDiaryId } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
 import { getListFromTable } from '../../common-modules/server/utils/common';
@@ -145,7 +145,7 @@ export async function reportByDates(req, res) {
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
-            qb.where('diary_instances.student_att_key', '=', 2)
+            qb.where('diary_instances.student_att_key', '=', STUDENT_ABS_KEY)
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
@@ -254,7 +254,7 @@ export async function getPivotData(req, res) {
             pivotDict[item.student_tz][key] = 0;
             pivotDict[item.student_tz][key + '_title'] = (item.lesson_name || 'לא ידוע') + ' ' + (item.teacher_name || 'לא ידוע');
         }
-        if (item.student_att_key === 2) {
+        if (item.student_att_key === STUDENT_ABS_KEY) {
             pivotDict[item.student_tz][key] += 1;
             pivotDict[item.student_tz].total += 1;
         }
@@ -335,13 +335,13 @@ export async function getDiaryLessons(req, res) {
         })
         qb.count({
             total_lessons: 'diary_lessons.id',
-            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),
-            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 1, 1, NULL)'),
-            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 3, 1, NULL)'),
+            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, NULL)'),
+            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, NULL)'),
+            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, NULL)'),
         })
         qb.select({
-            abs_count_num: bookshelf.knex.raw('(count(IF(diary_instances.student_att_key = 2, 1, NULL)) * 100) / count(diary_lessons.id)'),
-            abs_percents: bookshelf.knex.raw('CONCAT(ROUND((count(IF(diary_instances.student_att_key = 2, 1, NULL)) * 100) / count(diary_lessons.id), 0), "%")'),
+            abs_count_num: bookshelf.knex.raw('(count(IF(diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, NULL)) * 100) / count(diary_lessons.id)'),
+            abs_percents: bookshelf.knex.raw('CONCAT(ROUND((count(IF(diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, NULL)) * 100) / count(diary_lessons.id), 0), "%")'),
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
@@ -369,9 +369,9 @@ export async function getDiaryLessonsTotal(req, res) {
             year: 'student_base_klass.year',
         })
         qb.count({
-            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 2, 1, NULL)'),
-            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 1, 1, NULL)'),
-            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = 3, 1, NULL)'),
+            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, NULL)'),
+            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, NULL)'),
+            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, NULL)'),
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);

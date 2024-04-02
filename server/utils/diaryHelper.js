@@ -4,6 +4,10 @@ import Diary, { DiaryInstance, DiaryLesson } from "../models/diary.model";
 import { getAttTypesByUserId } from './queryHelper';
 import { formatJewishDates, getDatesFromDiaryData, getDaysByLessonCount, getNewLessonKey, getSubtituteFromDiaryData } from '../../common-modules/server/utils/diary';
 
+export const STUDENT_LATE_KEY = 1;
+export const STUDENT_ABS_KEY = 2;
+export const STUDENT_APPR_ABS_KEY = 3;
+
 export const processAndValidateData = (user_id, group, data, dates, isSubstitute) => {
     const days = getDaysByLessonCount(group.day_count, group.lesson_count);
     const diaryLessons = {};
