@@ -15,6 +15,7 @@ import { downloadFileFromStream } from '../../common-modules/server/utils/templa
 import { getListFromTable } from '../../common-modules/server/utils/common';
 import { defaultYear } from '../utils/listHelper';
 import StudentByYear from '../models/student-by-year.model';
+import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../utils/klassHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -158,9 +159,9 @@ export async function reportByDates(req, res) {
             student_name: 'students.name',
             student_base_klass: 'student_base_klass.klass_name',
             year: 'student_base_klass.year',
-            absences_1: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 1, diary_instances.student_att_key, null))'),
-            absences_2: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 2, diary_instances.student_att_key, null))'),
-            absences_3: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = 3, diary_instances.student_att_key, null))'),
+            absences_1: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = ' + KLASS_TYPE_BASE + ', diary_instances.student_att_key, null))'),
+            absences_2: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = ' + KLASS_TYPE_SPECIALITY + ', diary_instances.student_att_key, null))'),
+            absences_3: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = ' + KLASS_TYPE_MAASIT + ', diary_instances.student_att_key, null))'),
             absences_null: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id is null, diary_instances.student_att_key, null))'),
         })
     });

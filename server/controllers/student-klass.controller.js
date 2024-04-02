@@ -5,6 +5,7 @@ import genericController, { applyFilters, fetchPage } from '../../common-modules
 import { getListFromTable } from '../../common-modules/server/utils/common';
 import bookshelf from '../../common-modules/server/config/bookshelf';
 import { defaultYear } from '../utils/listHelper';
+import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../utils/klassHelper';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(StudentKlass);
 
@@ -68,9 +69,9 @@ export async function reportByKlassType(req, res) {
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
-            klasses_1: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id = 1, klasses.name, null) SEPARATOR ", ")'),
-            klasses_2: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id = 2, klasses.name, null) SEPARATOR ", ")'),
-            klasses_3: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id = 3, klasses.name, null) SEPARATOR ", ")'),
+            klasses_1: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id = ' + KLASS_TYPE_BASE + ', klasses.name, null) SEPARATOR ", ")'),
+            klasses_2: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id = ' + KLASS_TYPE_SPECIALITY + ', klasses.name, null) SEPARATOR ", ")'),
+            klasses_3: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id = ' + KLASS_TYPE_MAASIT + ', klasses.name, null) SEPARATOR ", ")'),
             klasses_null: bookshelf.knex.raw('GROUP_CONCAT(if(klasses.klass_type_id is null, klasses.name, null) SEPARATOR ", ")'),
         })
     });
