@@ -159,10 +159,16 @@ export async function reportByDates(req, res) {
             student_name: 'students.name',
             student_base_klass: 'student_base_klass.klass_name',
             year: 'student_base_klass.year',
-            absences_1: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = ' + KLASS_TYPE_BASE + ', diary_instances.student_att_key, null))'),
-            absences_2: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = ' + KLASS_TYPE_SPECIALITY + ', diary_instances.student_att_key, null))'),
-            absences_3: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id = ' + KLASS_TYPE_MAASIT + ', diary_instances.student_att_key, null))'),
-            absences_null: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id is null, diary_instances.student_att_key, null))'),
+            absences_1_late: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_BASE + ' AND diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, 0))'),
+            absences_1_abs: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_BASE + ' AND diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, 0))'),
+            absences_1_appr: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_BASE + ' AND diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, 0))'),
+            absences_2_late: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_SPECIALITY + ' AND diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, 0))'),
+            absences_2_abs: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_SPECIALITY + ' AND diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, 0))'),
+            absences_2_appr: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_SPECIALITY + ' AND diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, 0))'),
+            absences_3_late: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_MAASIT + ' AND diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, 0))'),
+            absences_3_abs: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_MAASIT + ' AND diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, 0))'),
+            absences_3_appr: bookshelf.knex.raw('SUM(IF(klasses.klass_type_id = ' + KLASS_TYPE_MAASIT + ' AND diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, 0))'),
+            // absences_null: bookshelf.knex.raw('COUNT(if(klasses.klass_type_id is null, diary_instances.student_att_key, null))'),
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
