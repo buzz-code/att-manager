@@ -5,7 +5,7 @@ import User from "../models/user.model";
 import StudentKlass from "../models/student-klass.model";
 import Lesson from "../models/lesson.model";
 import Group from "../models/group.model";
-import Diary from "../models/diary.model";
+import Diary, { DiaryInstance } from "../models/diary.model";
 import { getDaysByLessonCount } from "../../common-modules/server/utils/diary";
 
 export function getUserByPhone(phone_number) {
@@ -89,4 +89,10 @@ export function getDiaryDataByDiaryId(diary_id) {
         })
         .fetchAll()
         .then(res => res.toJSON());
+}
+
+export function updateDiaryInstancesAttKey(ids, new_att_key) {
+    return new DiaryInstance().query()
+        .whereIn('id', ids)
+        .update({ student_att_key: new_att_key });
 }

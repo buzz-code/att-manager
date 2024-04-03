@@ -58,6 +58,16 @@ const router = genericRoute(diaryCtrl, router => {
             await diaryCtrl.getTeacherAttReport(req, res);
         });
 
+    router.route('/approve-all-instances')
+        .post(async (req, res) => {
+            await diaryCtrl.approveAllInstances(req, res);
+        });
+
+    router.route('/approve-some-instances')
+        .post(async (req, res) => {
+            await diaryCtrl.approveSomeInstances(req, res);
+        });
+
     router.route('/:reportId/export-pdf')
         .post((req, res) => {
             exportPdf(req, res);

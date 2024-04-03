@@ -8,7 +8,7 @@ import AttType from '../models/att-type.model';
 import Group from '../models/group.model';
 import genericController, { applyFilters, fetchPage, fetchPagePromise } from '../../common-modules/server/controllers/generic.controller';
 import bookshelf from '../../common-modules/server/config/bookshelf';
-import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId, getGroupById } from '../utils/queryHelper';
+import { getDiaryDataByGroupId, getAllAttTypesByUserId, getDiaryDataByDiaryId, getGroupById, updateDiaryInstancesAttKey } from '../utils/queryHelper';
 import { STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY, STUDENT_LATE_KEY, fillDiaryData, processAndValidateData, saveData } from '../utils/diaryHelper';
 import { getDiaryMergedPdfStreamByDiaries, getDiaryStreamByDiaryId } from '../utils/printHelper';
 import { downloadFileFromStream } from '../../common-modules/server/utils/template';
@@ -275,9 +275,9 @@ export async function getPivotData(req, res) {
     })
 }
 
-export async function getAllDiaryInstances(req, res) {
+function getDiaryInstancesQuery(user_id, filters) {
     const dbQuery = new DiaryInstance()
-        .where({ 'diary_instances.user_id': req.currentUser.id })
+        .where({ 'diary_instances.user_id': user_id })
         .query(qb => {
             qb.innerJoin('students', 'students.tz', 'diary_instances.student_tz')
             qb.innerJoin('diary_lessons', 'diary_lessons.id', 'diary_instances.diary_lesson_id')
@@ -290,13 +290,18 @@ export async function getAllDiaryInstances(req, res) {
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
             qb.whereNotNull('diary_instances.student_att_key')
         });
-    applyFilters(dbQuery, req.query.filters);
+    applyFilters(dbQuery, filters);
+    return dbQuery;
+}
+export async function getAllDiaryInstances(req, res) {
+    const dbQuery = getDiaryInstancesQuery(req.currentUser.id, req.query.filters);
     const countQuery = dbQuery.clone().query()
         .countDistinct({ count: ['diary_instances.id', 'att_types.name'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
         qb.groupBy('diary_instances.id', 'att_types.name')
         qb.select({
+            id: 'diary_instances.id',
             student_tz: 'students.tz',
             student_name: 'students.name',
             student_base_klass: 'student_base_klass.klass_name',
@@ -413,4 +418,47 @@ export async function getTeacherAttReport(req, res) {
         })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
+}
+
+export async function approveSomeInstances(req, res) {
+    const { body: { ids } } = req;
+
+    try {
+        await updateDiaryInstancesAttKey(ids, STUDENT_APPR_ABS_KEY);
+    } catch (e) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: e.message,
+        });
+    }
+
+    res.json({
+        error: null,
+        data: { message: 'הנתונים נשמרו בהצלחה.' }
+    });
+}
+
+export async function approveAllInstances(req, res) {
+    const { body: { filters } } = req;
+    const dbQuery = getDiaryInstancesQuery(req.currentUser.id, JSON.stringify(filters));
+    const { data, total } = await fetchPagePromise({ dbQuery }, { page: 0, pageSize: 200 });
+
+    if (total > 200) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: 'לא ניתן לאשר יותר מ200 חיסורים בבת אחת'
+        });
+    }
+    const ids = data.map(item => item.id);
+
+    try {
+        await updateDiaryInstancesAttKey(ids, STUDENT_APPR_ABS_KEY);
+    } catch (e) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: e.message,
+        });
+    }
+
+    res.json({
+        error: null,
+        data: { message: 'הנתונים נשמרו בהצלחה.' }
+    });
 }

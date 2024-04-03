@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getJewishDate, formatJewishDateHebrew } from 'jewish-dates-core';
 
@@ -65,6 +65,24 @@ const getFilters = ({ students, teachers, klasses, lessons, attTypes }) => [
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
   { field: 'groups.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];
+const getActions = (handleApproveAll, handleApproveOne, handleApproveSome) => [
+  {
+    icon: 'event_available',
+    tooltip: 'אשר הכל',
+    isFreeAction: true,
+    onClick: handleApproveAll,
+  },
+  // {
+  //   icon: 'event_available',
+  //   tooltip: 'אשר חיסור',
+  //   onClick: handleApproveOne,
+  // },
+  {
+    icon: 'event_available',
+    tooltip: 'אשר חיסורים',
+    onClick: handleApproveSome,
+  },
+];
 
 const DiaryInstancesReportsContainer = ({ entity, title }) => {
   const dispatch = useDispatch();
@@ -72,8 +90,21 @@ const DiaryInstancesReportsContainer = ({ entity, title }) => {
     GET: { '../get-edit-data': editData },
   } = useSelector((state) => state[entity]);
 
+  const [conditions, setConditions] = useState({});
+
+  const handleApproveAll = useCallback(() => {
+    dispatch(crudAction.customHttpRequest(entity, 'POST', '../approve-all-instances', { filters: conditions }));
+  }, [entity, conditions]);
+  const handleApproveSome = useCallback((e, selectedRows) => {
+    dispatch(crudAction.customHttpRequest(entity, 'POST', '../approve-some-instances', { ids: selectedRows.map(item => item.id) }));
+  }, [entity]);
+  const handleApproveOne = useCallback((e, rowData) => {
+    handleApproveSome(e, [rowData]);
+  }, [handleApproveSome]);
+
   const columns = useMemo(() => getColumns(editData || {}), [editData]);
   const filters = useMemo(() => getFilters(editData || {}), [editData]);
+  const actions = useMemo(() => getActions(handleApproveAll, handleApproveOne, handleApproveSome), [handleApproveAll, handleApproveOne, handleApproveSome]);
 
   useEffect(() => {
     dispatch(crudAction.customHttpRequest(entity, 'GET', '../get-edit-data', { year: defaultYear }));
@@ -85,9 +116,14 @@ const DiaryInstancesReportsContainer = ({ entity, title }) => {
       title={title}
       columns={columns}
       filters={filters}
+      additionalActions={actions}
       disableAdd={true}
       disableUpdate={true}
       disableDelete={true}
+      onConditionUpdate={setConditions}
+      customMaterialOptions={{
+        selection: true,
+      }}
     />
   );
 };
