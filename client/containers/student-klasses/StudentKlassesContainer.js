@@ -13,8 +13,8 @@ const getColumns = ({ students, klasses }) => [
   { field: 'klass_id', title: 'כיתה', columnOrder: 'klasses.name', ...getPropsForAutoComplete('klass_id', klasses, 'key') },
   { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
-const getFilters = ({ students, klasses }) => [
-  { field: 'students.tz', label: 'תלמידה', type: 'list', operator: 'eq', list: students, idField: 'tz' },
+const getFilters = ({ studentsByYear, klasses }) => [
+  { field: 'students.tz', label: 'תלמידה', type: 'list', operator: 'eq', list: studentsByYear, idField: 'tz' },
   { field: 'klasses.key', label: 'כיתה', type: 'list', operator: 'eq', list: klasses, idField: 'key' },
   { field: 'student_klasses.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },
 ];

@@ -36,13 +36,32 @@ export async function findAll(req, res) {
  * @returns {*}
  */
 export async function getEditData(req, res) {
-    const [students, klasses] = await Promise.all([
+    function getStudentByYear(year) {
+        return new StudentKlass()
+            .where({
+                year,
+                'student_klasses.user_id': req.currentUser.id,
+            })
+            .query(qb => {
+                qb.leftJoin('students', 'students.tz', 'student_klasses.student_tz');
+                qb.groupBy('students.id')
+                qb.select({
+                    student_tz: 'students.tz',
+                    student_name: 'students.name',
+                })
+            })
+            .fetchAll()
+            .then(result => result.toJSON());
+    }
+
+    const [students, studentsByYear, klasses] = await Promise.all([
         getListFromTable(Student, req.currentUser.id, 'tz'),
+        getStudentByYear(req.query.year ?? defaultYear),
         getListFromTable(Klass, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
     ]);
     res.json({
         error: null,
-        data: { students, klasses }
+        data: { students, studentsByYear, klasses }
     });
 }
 
