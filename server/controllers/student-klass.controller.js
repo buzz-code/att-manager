@@ -39,7 +39,7 @@ export async function getEditData(req, res) {
     function getStudentByYear(year) {
         return new StudentKlass()
             .where({
-                year,
+                'student_klasses.year': year,
                 'student_klasses.user_id': req.currentUser.id,
             })
             .query(qb => {
