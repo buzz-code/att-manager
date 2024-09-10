@@ -46,8 +46,8 @@ export async function getEditData(req, res) {
                 qb.leftJoin('students', 'students.tz', 'student_klasses.student_tz');
                 qb.groupBy('students.id')
                 qb.select({
-                    student_tz: 'students.tz',
-                    student_name: 'students.name',
+                    tz: 'students.tz',
+                    name: 'students.name',
                 })
             })
             .fetchAll()
