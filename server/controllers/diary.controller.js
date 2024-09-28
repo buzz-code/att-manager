@@ -420,6 +420,54 @@ export async function getTeacherAttReport(req, res) {
     fetchPage({ dbQuery, countQuery }, req.query, res);
 }
 
+export async function getStudentLastAtt(req, res) {
+    // changes proposal:
+    // 1. show all lessons ,even when student missed it - remove condition, and change max calc to include the condition
+    // 2. do not show approve abs - add this to the condition
+    // 3. hebrew date - done on client side
+    // 4. performance - need to investigate and add indexes
+    const dbQuery = new Student()
+        .where({ 'students.user_id': req.currentUser.id })
+        .query(qb => {
+            qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
+            qb.join('diaries')
+            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
+            qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
+            qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
+            qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+            qb.where('diary_instances.student_att_key', '!=', STUDENT_ABS_KEY)
+        });
+    applyFilters(dbQuery, req.query.filters);
+    const countQuery = dbQuery.clone().query()
+        .countDistinct({ count: ['students.id', 'groups.id'] })
+        .then(res => res[0].count);
+    dbQuery.query(qb => {
+        qb.groupBy('students.id', 'groups.id', 'student_base_klass.klass_name', 'student_base_klass.year')
+        qb.select({
+            student_tz: 'students.tz',
+            student_name: 'students.name',
+            student_base_klass: 'student_base_klass.klass_name',
+            year: 'student_base_klass.year',
+            teacher_name: 'teachers.name',
+            klass_name: 'klasses.name',
+            lesson_name: 'lessons.name',
+        })
+        qb.count({
+            total_lessons: 'diary_lessons.id',
+            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, NULL)'),
+            late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, NULL)'),
+            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, NULL)'),
+        })
+        qb.max({
+            last_att: 'diary_lessons.lesson_date'
+        })
+    });
+    fetchPage({ dbQuery, countQuery }, req.query, res);
+}
+
 export async function approveSomeInstances(req, res) {
     const { body: { ids } } = req;
 

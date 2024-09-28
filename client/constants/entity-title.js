@@ -15,6 +15,7 @@ export const PIVOT_REPORTS = 'דוח PIVOT';
 export const DIARY_INSTANCES_REPORTS = 'דיווחים';
 export const DIARY_LESSONS_REPORTS = 'דיווחים ואחוזים';
 export const TEACHER_ATT_REPORTS = 'דו"ח סיכום מורות';
+export const STUDENT_LAST_ATT = 'דו"ח נוכחות אחרונה';
 export const DIARY_LESSONS_TOTAL_REPORTS = 'דיווחים כולל';
 export const REPORT_EDIT = 'עריכת דיווחים';
 export const STUDENT_REPORTS = 'דו"ח לתלמידה';

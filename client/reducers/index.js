@@ -28,6 +28,7 @@ import {
   // ORGANIATION_REPORTS,
   DASHBOARD,
   TEACHER_ATT_REPORTS,
+  STUDENT_LAST_ATT,
 } from '../constants/entity';
 
 const appReducer = (history) =>
@@ -57,6 +58,7 @@ const appReducer = (history) =>
     // [ORGANIATION_REPORTS]: crudReducer(ORGANIATION_REPORTS),
     [DASHBOARD]: crudReducer(DASHBOARD),
     [TEACHER_ATT_REPORTS]: crudReducer(TEACHER_ATT_REPORTS),
+    [STUDENT_LAST_ATT]: crudReducer(STUDENT_LAST_ATT),
   });
 
 const rootReducer = (state, action) => {

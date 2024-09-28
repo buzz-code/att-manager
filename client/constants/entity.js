@@ -15,6 +15,7 @@ export const PIVOT_REPORTS = 'diaries/get-pivot-data';
 export const DIARY_INSTANCES_REPORTS = 'diaries/get-all-diary-instances';
 export const DIARY_LESSONS_REPORTS = 'diaries/get-all-diary-lessons';
 export const TEACHER_ATT_REPORTS = 'diaries/get-teacher-att-report';
+export const STUDENT_LAST_ATT = 'diaries/get-student-last-att';
 export const DIARY_LESSONS_TOTAL_REPORTS = 'diaries/get-all-diary-lessons-total';
 export const REPORT_EDIT = 'report-edit';
 export const STUDENT_REPORTS = 'reports/getStudentReport';

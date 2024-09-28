@@ -16,6 +16,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PrintIcon from '@material-ui/icons/Print';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import DateRangeIcon from '@material-ui/icons/DateRange';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
 import * as entities from './entity';
 import * as titles from './entity-title';
@@ -37,6 +38,7 @@ import PivotReports from '../containers/pivot-reports/PivotReportsContainer';
 import DiaryInstancesReports from '../containers/diary-instances-reports/DiaryInstancesReportsContainer';
 import DiaryLessonsReports from '../containers/diary-lessons-reports/DiaryLessonsReportsContainer';
 import TeacherAttReports from '../containers/teacher-att-reports/TeacherAttReportsContainer';
+import StudentLastAtt from '../containers/student-last-att/StudentLastAttContainer';
 import DiaryLessonsTotalReports from '../containers/diary-lessons-total-reports/DiaryLessonsReportsTotalContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
@@ -187,6 +189,13 @@ export default [
       icon: AssignmentTurnedInIcon,
       title: titles.TEACHER_ATT_REPORTS,
       props: { entity: entities.TEACHER_ATT_REPORTS, title: titles.TEACHER_ATT_REPORTS },
+    },
+    {
+      path: '/student-last-att',
+      component: StudentLastAtt,
+      icon: RecentActorsIcon,
+      title: titles.STUDENT_LAST_ATT,
+      props: { entity: entities.STUDENT_LAST_ATT, title: titles.STUDENT_LAST_ATT },
     },
     // {
     //   path: '/report-edit',
