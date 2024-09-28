@@ -429,6 +429,9 @@ export async function getStudentLastAtt(req, res) {
     const dbQuery = new Student()
         .where({ 'students.user_id': req.currentUser.id })
         .query(qb => {
+            // performance suggest - the current year filter is done on student_base_klass, 
+            // if we replace the joining order, and join groups by year filter - it will save us some time
+            // need to check
             qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
             qb.join('diaries')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
