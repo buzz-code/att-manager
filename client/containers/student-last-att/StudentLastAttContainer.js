@@ -17,7 +17,6 @@ const getColumns = ({ }) => [
   { field: 'lesson_name', title: 'שיעור' },
   { field: 'total_lessons', title: 'סה"כ שיעורים' },
   { field: 'late_count', title: 'איחורים' },
-  { field: 'approved_abs_count', title: 'מאושרים' },
   { field: 'last_att', title: 'נוכחות אחרונה', type: 'date' },
 ];
 const getFilters = ({ students, teachers, klasses, lessons }) => [

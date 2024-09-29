@@ -459,9 +459,7 @@ export async function getStudentLastAtt(req, res) {
         })
         qb.count({
             total_lessons: 'diary_lessons.id',
-            abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_ABS_KEY + ', 1, NULL)'),
             late_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_LATE_KEY + ', 1, NULL)'),
-            approved_abs_count: bookshelf.knex.raw('IF(diary_instances.student_att_key = ' + STUDENT_APPR_ABS_KEY + ', 1, NULL)'),
         })
         qb.max({
             last_att: 'diary_lessons.lesson_date'
