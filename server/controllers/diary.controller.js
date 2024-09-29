@@ -423,7 +423,6 @@ export async function getTeacherAttReport(req, res) {
 export async function getStudentLastAtt(req, res) {
     // changes proposal:
     // 1. show all lessons ,even when student missed it - remove condition, and change max calc to include the condition
-    // 2. do not show approve abs - add this to the condition
     // 3. hebrew date - done on client side
     // 4. performance - need to investigate and add indexes
     const dbQuery = new Student()
@@ -441,7 +440,7 @@ export async function getStudentLastAtt(req, res) {
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
-            qb.where('diary_instances.student_att_key', '!=', STUDENT_ABS_KEY)
+            qb.whereNotIn('diary_instances.student_att_key', [STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY])
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
