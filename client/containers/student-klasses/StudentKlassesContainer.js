@@ -7,9 +7,9 @@ import { getPropsForAutoComplete } from '../../../common-modules/client/utils/fo
 
 import { defaultYear, yearsList } from '../../services/yearService';
 
-const getColumns = ({ students, klasses }) => [
+const getColumns = ({ studentsByYear, klasses }) => [
   { field: 'student_tz', title: 'מספר תז', editable: 'never' },
-  { field: 'student_tz', title: 'תלמידה', columnOrder: 'students.name', ...getPropsForAutoComplete('student_tz', students, 'tz') },
+  { field: 'student_tz', title: 'תלמידה', columnOrder: 'students.name', ...getPropsForAutoComplete('student_tz', studentsByYear, 'tz') },
   { field: 'klass_id', title: 'כיתה', columnOrder: 'klasses.name', ...getPropsForAutoComplete('klass_id', klasses, 'key') },
   { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList), initialEditValue: defaultYear },
 ];
