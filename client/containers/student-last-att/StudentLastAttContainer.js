@@ -7,18 +7,19 @@ import { getPropsForAutoComplete } from '../../../common-modules/client/utils/fo
 
 import { defaultYear, yearsList } from '../../services/yearService';
 
-const getColumns = ({ }) => [
+const getColumns = ({klassTypes }) => [
   { field: 'student_tz', title: 'תז תלמידה', columnOrder: 'students.tz' },
   { field: 'student_name', title: 'תלמידה' },
   { field: 'student_base_klass', title: 'כיתת בסיס' },
   { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
-  { field: 'teacher_name', title: 'מורה' },
-  { field: 'klass_name', title: 'כיתה' },
-  { field: 'lesson_name', title: 'שיעור' },
+  { field: 'klass_type_id', title: 'סוג כיתה', ...getPropsForAutoComplete('klass_type_id', klassTypes) },
+  // { field: 'teacher_name', title: 'מורה' },
+  // { field: 'klass_name', title: 'כיתה' },
+  // { field: 'lesson_name', title: 'שיעור' },
   { field: 'total_lessons', title: 'סה"כ שיעורים' },
   { field: 'last_att', title: 'נוכחות אחרונה', type: 'date' },
 ];
-const getFilters = ({ students, teachers, klasses, lessons }) => [
+const getFilters = ({ students, teachers, klasses, lessons, klassTypes }) => [
   { field: 'students.tz', label: 'תז תלמידה', type: 'text', operator: 'like' },
   {
     field: 'students.tz',
@@ -29,30 +30,31 @@ const getFilters = ({ students, teachers, klasses, lessons }) => [
     idField: 'tz',
   },
   { field: 'student_base_klass.klass_name', label: 'כיתת בסיס', type: 'text', operator: 'like' },
-  {
-    field: 'klasses.key',
-    label: 'כיתה',
-    type: 'list',
-    operator: 'eq',
-    list: klasses,
-    idField: 'key',
-  },
-  {
-    field: 'teachers.tz',
-    label: 'מורה',
-    type: 'list',
-    operator: 'eq',
-    list: teachers,
-    idField: 'tz',
-  },
-  {
-    field: 'lessons.key',
-    label: 'שיעור',
-    type: 'list',
-    operator: 'eq',
-    list: lessons,
-    idField: 'key',
-  },
+  { field: 'klasses.klass_type_id', label: 'סוג כיתה', type: 'list', operator: 'eq', list: klassTypes, idField: 'id' },
+  // {
+  //   field: 'klasses.key',
+  //   label: 'כיתה',
+  //   type: 'list',
+  //   operator: 'eq',
+  //   list: klasses,
+  //   idField: 'key',
+  // },
+  // {
+  //   field: 'teachers.tz',
+  //   label: 'מורה',
+  //   type: 'list',
+  //   operator: 'eq',
+  //   list: teachers,
+  //   idField: 'tz',
+  // },
+  // {
+  //   field: 'lessons.key',
+  //   label: 'שיעור',
+  //   type: 'list',
+  //   operator: 'eq',
+  //   list: lessons,
+  //   idField: 'key',
+  // },
   { field: 'diary_lessons.lesson_date', label: 'מתאריך', type: 'date', operator: 'date-before' },
   { field: 'diary_lessons.lesson_date', label: 'עד תאריך', type: 'date', operator: 'date-after' },
   { field: 'student_base_klass.year', label: 'שנה', type: 'list', operator: 'eq', list: yearsList, defaultValue: defaultYear, disabled: true },

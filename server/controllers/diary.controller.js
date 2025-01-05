@@ -16,6 +16,7 @@ import { getListFromTable } from '../../common-modules/server/utils/common';
 import { defaultYear } from '../utils/listHelper';
 import StudentByYear from '../models/student-by-year.model';
 import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../utils/klassHelper';
+import KlassType from '../models/klass-type.model';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -175,16 +176,17 @@ export async function reportByDates(req, res) {
 }
 
 export async function getEditData(req, res) {
-    const [students, klasses, teachers, lessons, attTypes] = await Promise.all([
+    const [students, klasses, teachers, lessons, attTypes, klassTypes] = await Promise.all([
         getListFromTable(StudentByYear, req.currentUser.id, 'tz', { year: req.query.year ?? defaultYear }),
         getListFromTable(Klass, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
         getListFromTable(Teacher, req.currentUser.id, 'tz'),
         getListFromTable(Lesson, req.currentUser.id, 'key'),
         getListFromTable(AttType, req.currentUser.id, 'key'),
+        getListFromTable(KlassType, req.currentUser.id),
     ]);
     res.json({
         error: null,
-        data: { students, klasses, teachers, lessons, attTypes }
+        data: { students, klasses, teachers, lessons, attTypes, klassTypes }
     });
 }
 
@@ -444,18 +446,19 @@ export async function getStudentLastAtt(req, res) {
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
-        .countDistinct({ count: ['students.id', 'groups.id'] })
+        .countDistinct({ count: ['students.id', 'klasses.klass_type_id'] })
         .then(res => res[0].count);
     dbQuery.query(qb => {
-        qb.groupBy('students.id', 'groups.id', 'student_base_klass.klass_name', 'student_base_klass.year')
+        qb.groupBy('students.id', 'klasses.klass_type_id', 'student_base_klass.klass_name', 'student_base_klass.year')
         qb.select({
             student_tz: 'students.tz',
             student_name: 'students.name',
             student_base_klass: 'student_base_klass.klass_name',
             year: 'student_base_klass.year',
-            teacher_name: 'teachers.name',
-            klass_name: 'klasses.name',
-            lesson_name: 'lessons.name',
+            klass_type_id: 'klasses.klass_type_id',
+            // teacher_name: 'teachers.name',
+            // klass_name: 'klasses.name',
+            // lesson_name: 'lessons.name',
         })
         qb.count({
             total_lessons: 'diary_lessons.id',
