@@ -434,7 +434,7 @@ export async function getStudentLastAtt(req, res) {
             qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
             qb.join('diaries')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
-            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('klasses', {'klasses.key': 'groups.klass_id', 'klasses.year': 'student_base_klass.year'})
             qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
