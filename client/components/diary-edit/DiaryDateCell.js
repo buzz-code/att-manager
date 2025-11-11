@@ -1,30 +1,46 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 // import DateFnsUtils from '@date-io/date-fns';
 // import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { ReactJewishDatePicker } from "react-jewish-datepicker";
 import DeleteIcon from '@material-ui/icons/Delete';
+import { formatDateOnly, parseDateOnly } from '../../../common-modules/client/utils/dateUtil';
 
 const DiaryDateCell = ({ value, columnId, updateMyData, label, className, iconClassName }) => {
+    
     const onChange = useCallback(({ date }) => {
-        updateMyData(columnId, date);
+        const dateString = formatDateOnly(date);
+        updateMyData(columnId, dateString);
     }, [updateMyData, columnId]);
 
     const onClear = useCallback(() => {
         updateMyData(columnId, null);
     }, [updateMyData, columnId]);
 
-    if (typeof (value) == 'string') {
-        value = new Date(value);
-    }
+    const dateValue = useMemo(() => {
+        if (!value) return null;
+        if (value instanceof Date) return value;
+        
+        // Try parsing as date string (YYYY-MM-DD)
+        const parsed = parseDateOnly(value);
+        if (parsed) return parsed;
+        
+        // Legacy: try parsing other string formats
+        if (typeof value === 'string') {
+            const date = new Date(value);
+            if (!isNaN(date.getTime())) return date;
+        }
+        
+        return null;
+    }, [value]);
 
     return <>
         {label}
         {'\u00A0'}
         <DeleteIcon className={iconClassName} onClick={onClear} />
         <ReactJewishDatePicker
-            key={value}
+            key={dateValue?.getTime() || 'empty'}
             className={className}
-            value={value}
+            value={dateValue}
             isHebrew
             onClick={onChange}
         />

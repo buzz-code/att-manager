@@ -22,10 +22,12 @@ export const processAndValidateData = (user_id, group, data, dates, isSubstitute
                     continue;
                 }
                 if (!diaryLessons[lesson]) {
+                    const lessonDate = formatLessonDate(dates[day.key]);
+                    
                     diaryLessons[lesson] = {
                         user_id,
                         lesson_key: lesson,
-                        lesson_date: moment(dates[day.key]).format('YYYY-MM-DD'),
+                        lesson_date: lessonDate,
                         is_substitute: isSubstitute[day.key],
                         students: []
                     }
@@ -42,6 +44,14 @@ export const processAndValidateData = (user_id, group, data, dates, isSubstitute
     }
 
     return Object.values(diaryLessons);
+}
+
+function formatLessonDate(dateValue) {
+    // Pass through date strings, parse everything else with moment
+    if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+        return dateValue;
+    }
+    return moment(dateValue).format('YYYY-MM-DD');
 }
 
 async function deleteAllDiaryLessonsAndInstances(diary_id) {
