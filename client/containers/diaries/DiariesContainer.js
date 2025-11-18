@@ -12,6 +12,7 @@ import { defaultYear, yearsList } from '../../services/yearService';
 const getColumns = () => [
   { field: 'group_name', title: 'קבוצה' },
   { field: 'first_lesson', title: 'שיעור ראשון', render: ({ first_lesson }) => first_lesson && formatJewishDateHebrew(getJewishDate(new Date(first_lesson))), isHebrewDate: true },
+  { field: 'last_lesson', title: 'שיעור אחרון', render: ({ last_lesson }) => last_lesson && formatJewishDateHebrew(getJewishDate(new Date(last_lesson))), isHebrewDate: true },
   { field: 'year', title: 'שנה', ...getPropsForAutoComplete('year', yearsList) },
 ];
 const getFilters = ({ klasses, teachers, lessons }) => [

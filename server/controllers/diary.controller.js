@@ -52,6 +52,7 @@ export async function findAll(req, res) {
         qb.groupBy('diaries.id')
         qb.leftJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
         qb.min({ first_lesson: 'diary_lessons.lesson_date' })
+        qb.max({ last_lesson: 'diary_lessons.lesson_date' })
     });
     fetchPage({ dbQuery, countQuery }, req.query, res);
 }
