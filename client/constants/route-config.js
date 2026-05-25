@@ -39,6 +39,7 @@ import DiaryInstancesReports from '../containers/diary-instances-reports/DiaryIn
 import DiaryLessonsReports from '../containers/diary-lessons-reports/DiaryLessonsReportsContainer';
 import TeacherAttReports from '../containers/teacher-att-reports/TeacherAttReportsContainer';
 import StudentLastAtt from '../containers/student-last-att/StudentLastAttContainer';
+import StudentPresenceReports from '../containers/student-presence-reports/StudentPresenceReportsContainer';
 import DiaryLessonsTotalReports from '../containers/diary-lessons-total-reports/DiaryLessonsReportsTotalContainer';
 import ReportEdit from '../containers/report-edit/ReportEditContainer';
 import GroupsPrint from '../containers/groups-print/GroupsPrintContainer';
@@ -196,6 +197,13 @@ export default [
       icon: RecentActorsIcon,
       title: titles.STUDENT_LAST_ATT,
       props: { entity: entities.STUDENT_LAST_ATT, title: titles.STUDENT_LAST_ATT },
+    },
+    {
+      path: '/student-presence-reports',
+      component: StudentPresenceReports,
+      icon: AssignmentTurnedInIcon,
+      title: titles.STUDENT_PRESENCE_REPORTS,
+      props: { entity: entities.STUDENT_PRESENCE_REPORTS, title: titles.STUDENT_PRESENCE_REPORTS },
     },
     // {
     //   path: '/report-edit',

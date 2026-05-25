@@ -63,6 +63,11 @@ const router = genericRoute(diaryCtrl, router => {
             await diaryCtrl.getStudentLastAtt(req, res);
         });
 
+    router.route('/get-student-presence')
+        .get(async (req, res) => {
+            await diaryCtrl.getStudentPresence(req, res);
+        });
+
     router.route('/approve-all-instances')
         .post(async (req, res) => {
             await diaryCtrl.approveAllInstances(req, res);
