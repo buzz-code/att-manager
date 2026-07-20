@@ -17,6 +17,7 @@ import { defaultYear } from '../utils/listHelper';
 import StudentByYear from '../models/student-by-year.model';
 import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../utils/klassHelper';
 import KlassType from '../models/klass-type.model';
+import { applyNullSafeDateFilter } from './student-klass.controller';
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -243,6 +244,9 @@ export async function getPivotData(req, res) {
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
+            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'diary_instances.student_tz' })
+            applyNullSafeDateFilter(qb, 'student_klasses.start_date', '<=', 'diary_lessons.lesson_date');
+            applyNullSafeDateFilter(qb, 'student_klasses.end_date', '>=', 'diary_lessons.lesson_date');
             qb.select('diary_instances.*')
             qb.select({
                 teacher_name: 'teachers.name',
@@ -332,6 +336,8 @@ export async function getDiaryLessons(req, res) {
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+            applyNullSafeDateFilter(qb, 'student_klasses.start_date', '<=', 'diary_lessons.lesson_date');
+            applyNullSafeDateFilter(qb, 'student_klasses.end_date', '>=', 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
@@ -443,6 +449,8 @@ export async function getStudentLastAtt(req, res) {
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+            applyNullSafeDateFilter(qb, 'student_klasses.start_date', '<=', 'diary_lessons.lesson_date');
+            applyNullSafeDateFilter(qb, 'student_klasses.end_date', '>=', 'diary_lessons.lesson_date');
             qb.whereRaw(`COALESCE(diary_instances.student_att_key, ?) NOT IN (?, ?)`, [STUDENT_LATE_KEY, STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY]);
         });
     applyFilters(dbQuery, req.query.filters);
@@ -485,6 +493,8 @@ export async function getStudentPresence(req, res) {
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+            applyNullSafeDateFilter(qb, 'student_klasses.start_date', '<=', 'diary_lessons.lesson_date');
+            applyNullSafeDateFilter(qb, 'student_klasses.end_date', '>=', 'diary_lessons.lesson_date');
             qb.whereRaw(`COALESCE(diary_instances.student_att_key, ?) NOT IN (?, ?)`, [STUDENT_LATE_KEY, STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY])
         });
     applyFilters(dbQuery, req.query.filters);
