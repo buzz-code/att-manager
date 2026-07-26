@@ -17,19 +17,6 @@ import { defaultYear } from '../utils/listHelper';
 import StudentByYear from '../models/student-by-year.model';
 import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../utils/klassHelper';
 import KlassType from '../models/klass-type.model';
-import { applyNullSafeDateColumnFilter } from './student-klass.controller';
-
-/**
- * Keep only the joined student_klasses row(s) that were active on the given lesson's date,
- * treating a blank start_date/end_date as an open-ended range.
- *
- * @param {object} qb query builder
- * @param {string} lessonDateColumn e.g. 'diary_lessons.lesson_date'
- */
-function applyActiveStudentKlassFilter(qb, lessonDateColumn) {
-    applyNullSafeDateColumnFilter(qb, 'student_klasses.start_date', '<=', lessonDateColumn);
-    applyNullSafeDateColumnFilter(qb, 'student_klasses.end_date', '>=', lessonDateColumn);
-}
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);
 
@@ -160,9 +147,7 @@ export async function reportByDates(req, res) {
             qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
-            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
             // qb.where('diary_instances.student_att_key', '=', STUDENT_ABS_KEY)
         });
     applyFilters(dbQuery, req.query.filters);
@@ -258,8 +243,6 @@ export async function getPivotData(req, res) {
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
-            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'diary_instances.student_tz' })
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
             qb.select('diary_instances.*')
             qb.select({
                 teacher_name: 'teachers.name',
@@ -304,13 +287,11 @@ function getDiaryInstancesQuery(user_id, filters) {
             qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
-            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('att_types', 'att_types.key', 'diary_instances.student_att_key')
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
             qb.whereNotNull('diary_instances.student_att_key')
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, filters);
     return dbQuery;
@@ -351,7 +332,6 @@ export async function getDiaryLessons(req, res) {
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
@@ -388,12 +368,8 @@ export async function getDiaryLessonsTotal(req, res) {
         .query(qb => {
             qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
             qb.join('diaries')
-            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
-            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
-            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
@@ -468,7 +444,6 @@ export async function getStudentLastAtt(req, res) {
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
             qb.whereRaw(`COALESCE(diary_instances.student_att_key, ?) NOT IN (?, ?)`, [STUDENT_LATE_KEY, STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY]);
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
@@ -511,7 +486,6 @@ export async function getStudentPresence(req, res) {
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
             qb.whereRaw(`COALESCE(diary_instances.student_att_key, ?) NOT IN (?, ?)`, [STUDENT_LATE_KEY, STUDENT_ABS_KEY, STUDENT_APPR_ABS_KEY])
-            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()

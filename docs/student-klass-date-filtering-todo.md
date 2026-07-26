@@ -1,74 +1,114 @@
-# student_klasses start_date/end_date - report coverage tracker
+# student_klasses start_date/end_date - deferred work tracker
 
-Context: `student_klasses` gained optional `start_date`/`end_date` so a
-student's klass assignment can be time-boxed. Business rule (confirmed):
-**a student's BASE-type klass never changes for the whole year - only
-speciality/maasit assignments can be switched mid-year** (enforced in
-`switchKlass`, `student-klass.controller.js`). This file exists so a
-future pass doesn't have to re-derive which reports were checked, why,
-and what's still open. Route inventory pulled from `server/routes/*.route.js`.
+## What actually shipped in this PR (MVP)
 
-## Done - NULL-safe active-range filtering applied
+Kept deliberately minimal:
 
-| Function | File | Notes |
-|---|---|---|
-| `findAll` (CRUD grid) | `student-klass.controller.js` | Via shared `date-before-or-null`/`date-after-or-null` operators in `common-modules` `applyFilters`. |
-| `reportByKlassType` | `student-klass.controller.js` | `active_at` filter, defaults to today. |
-| `getDiaryLessons` | `diary.controller.js` | |
-| `getStudentLastAtt` | `diary.controller.js` | |
-| `getStudentPresence` | `diary.controller.js` | |
-| `getPivotData` | `diary.controller.js` | Also had to add the `student_klasses` join itself - wasn't there before. |
-| `getDiaryInstancesQuery` (→ `getAllDiaryInstances`, `approveAllInstances`) | `diary.controller.js` | Absences list + bulk-approve. Had zero `student_klasses` join before. |
-| `reportByDates` | `diary.controller.js` | Absences-by-klass-type report. Same gap as above. |
-| `getDiaryLessonsTotal` | `diary.controller.js` | Also fixed a **real pre-existing bug** unrelated to dates: `qb.join('diaries')` had no `ON` condition -> unconditioned cross join, counted every lesson in the account against every student regardless of klass/group. Fixed by adding the proper `groups`/`klasses`/`student_klasses` join chain. |
-| `getStudentsByUserIdAndKlassIdAndYear` (opening a new diary to fill in, and both diary + grade printing route through this) | `queryHelper.js` | Filters the roster to assignments active **as of today**. See caveat below - this is the one fix that's structurally imperfect. |
+1. **Migration** - `server/migrations/20250720160000_add_dates_to_student_klasses.js`
+   adds nullable `start_date`/`end_date` to `student_klasses`.
+2. **Workflow** - `.github/workflows/node.js.yml` runs `npm run migrate` on
+   deploy. Required a real (pre-existing, unrelated) bug fix in
+   `knexfile.js` - a malformed relative path meant `npm run migrate` never
+   actually worked - see commit `678ac69`.
+3. **Switch-klass action** - `POST /student-klasses/switch-klass` closes the
+   current assignment (`end_date`) and opens a new one atomically, plus a
+   row action + dialog in the grid. Enforces the business rule that a
+   student's BASE-type klass is fixed for the year - only
+   speciality/maasit assignments are switchable (rejects otherwise).
+   `get-edit-data` returns `klass_type_id` per klass + `baseKlassTypeId` so
+   the client can apply that rule without hardcoding the type-id
+   convention.
 
-## Explicitly reviewed, not touched - needs a decision, not a bug
+Everything below was built, tested, and working, then **deliberately
+reverted** out of this PR to keep it small. Nothing was lost - it's all
+still in this branch's git history (forward-revert commits only, no
+history rewrite), so it can be restored with `git show <sha> -- <path>`
+or cherry-picked rather than rebuilt from scratch.
 
-- **`report-edit.controller.js`** - the generic ad-hoc report builder. It exposes
-  `student_klasses` as a joinable table for arbitrary user-defined reports
-  (`tables`/`join` config, not a fixed query). There's no way to bake in
-  date-awareness generically without knowing what the user is building.
-  Decide: leave as-is (user's responsibility), or add an opt-in
-  "active only" toggle to the report-builder UI.
-- **`dashboard.controller.js` `getStats`** - the "students" count widget uses
-  `getCountFromTable(StudentKlass, user_id, {year})`. Since speciality/maasit
-  can now have multiple rows per student per year, check whether
-  `getCountFromTable`'s distinct-by-field actually collapses that correctly
-  (it's a shared `common-modules` utility) before trusting this number.
+## Deferred: grid visibility + date-range filtering
 
-## Reviewed, not applicable
+Was in commits `4ef7cab` and `f1cff2d` (client filter operator direction
+was wrong in `4ef7cab`, corrected in `f1cff2d` - use the later version as
+the reference).
 
-- **`att-report.controller.js`** - independent `att_reports` entity, doesn't
-  join `student_klasses` at all.
-- **`group.controller.js`** grade printing (`print-one-grade`,
-  `print-all-grades`, `excel-one-grade`) - routes through
-  `getGradeStreamByGroupId` -> `getDiaryDataByGroupId` ->
-  `getStudentsByUserIdAndKlassIdAndYear`, same function already fixed above.
-  No separate action needed, just noting it's covered indirectly.
-- **`yemot.controller.js`** - phone/IVR integration, no `student_klasses`
-  reference.
-- **`student_base_klass`** join pattern (used loosely - by `student_tz`+`year`
-  in some queries, by `student_tz` alone in others - throughout
-  `diary.controller.js`) - **safe today only because base klass is
-  immutable per the business rule above.** If that rule is ever relaxed
-  (a base klass becomes switchable), every one of these joins needs to
-  become date-aware too, or a student with 2+ base-klass periods in a year
-  will get double-counted in `getDiaryLessons`, `getDiaryLessonsTotal`,
-  `getStudentLastAtt`, `getStudentPresence`, `reportByDates`,
-  `getAllDiaryInstances`, and the `getPivotData` student list. Reproduced
-  this empirically in testing (a student with 2 same-type periods showed
-  2x the correct lesson count) before the business rule was confirmed.
-  **Do not relax the base-klass-is-fixed rule without redoing this.**
+- `client/containers/student-klasses/StudentKlassesContainer.js` -
+  `start_date`/`end_date` grid columns, plus 4 NULL-safe date-range
+  filters (`date-before-or-null`/`date-after-or-null`, confirmed against
+  the real `applyFilters` semantics in `common-modules`).
+- `common-modules/server/controllers/generic.controller.js` - the
+  `date-before-or-null`/`date-after-or-null` operators themselves. **This
+  is already merged into common-modules master** (PR #1, commit
+  `0acdf9a`) and att-manager's submodule pin already includes it - it's
+  just unused right now since nothing in the client sends those operators
+  anymore. Either use it when this item gets picked up, or remove it from
+  common-modules if it sits unused long enough to not be worth keeping.
+- `client/containers/excel-import/ExcelImportContainer.js` - adds
+  `start_date`/`end_date` to the importable columns for `STUDENT_KLASSES`.
 
-## Known imperfect fix - revisit if it becomes a real complaint
+## Deferred: reports/diary active-date filtering
 
-`getStudentsByUserIdAndKlassIdAndYear` filters to "active as of today"
-because lesson dates aren't chosen until *after* the roster is fetched
-(days are template slots at that point, not real dates) - there's no
-single lesson_date to filter against yet, unlike the read-only reports
-above. Consequence: reprinting or refilling an *old* diary reflects
-*today's* active roster, not the historical one at the time. If a manager
-ever needs to reprint a diary from months ago and get the roster as it
-was back then, this needs a real fix (e.g. pass the diary's own date
-range into the roster query instead of "today").
+Was in commits `4ef7cab`, `f1cff2d`, `26fbbcc`. Full audit + reasoning is
+in those commit messages. Summary of what needs redoing:
+
+- `student-klass.controller.js` `reportByKlassType` - `active_at` filter
+  (defaults to today), via a synthetic filter field extracted before
+  `applyFilters` runs (can't express "two columns from one value" through
+  the generic filter mechanism).
+- `diary.controller.js` - `getDiaryLessons`, `getStudentLastAtt`,
+  `getStudentPresence`, `getPivotData`, `getDiaryInstancesQuery` (→
+  `getAllDiaryInstances` absences list + `approveAllInstances`),
+  `reportByDates` - all need the NULL-safe "was this student_klasses row
+  active on this lesson's date" check.
+  - **`getDiaryLessonsTotal` has a real, independent bug worth fixing
+    regardless of this PR's scope**: `qb.join('diaries')` has no `ON`
+    condition, so it's an unconditioned cross join - it counts every
+    diary lesson in the account against every student, regardless of
+    klass/group membership. Confirmed empirically (a student with no
+    connection to a klass showed nonzero `total_lessons` for that
+    klass's lessons). Fix is in commit `26fbbcc`, don't lose it.
+- `server/utils/queryHelper.js` `getStudentsByUserIdAndKlassIdAndYear`
+  (used both when opening a new diary to fill in, and by diary/grade
+  printing) - filters the roster to assignments active as of today.
+  Known limitation even in the reverted version: since lesson dates
+  aren't chosen until after the roster is fetched, this can't be
+  retroactive - reprinting an old diary would reflect today's roster, not
+  the historical one. Worth a real fix (pass the diary's own date range
+  in) if this becomes a real complaint.
+
+## Deferred: reviewed, not touched either way (still applies)
+
+- **`report-edit.controller.js`** - the generic ad-hoc report builder
+  exposes `student_klasses` as a joinable table for arbitrary
+  user-defined reports. No automatic date-awareness possible without
+  knowing what the user is building. Decide: leave as user's
+  responsibility, or add an opt-in "active only" toggle to the
+  report-builder UI.
+- **`dashboard.controller.js` `getStats`** - "students" count widget via
+  `getCountFromTable(StudentKlass, user_id, {year})`. Since
+  speciality/maasit can have multiple rows per student per year, verify
+  `getCountFromTable`'s distinct-by-field actually collapses that
+  correctly before trusting this number.
+
+## Deferred: per-student history view
+
+Was in commit `a2ca7cc` - fully working: `GET
+/student-klasses/history?student_tz=&year=` returns a student's full
+klass-assignment rows for the year, plus a grid row action + dialog
+showing the fixed base klass and a chronological list of the other
+periods. Cherry-pick that commit (on top of the current controller/route
+files, it applies close to cleanly) rather than rebuilding.
+
+## Load-bearing assumption to not forget
+
+The safety of the loose `student_base_klass` joins throughout
+`diary.controller.js` (joined by `student_tz`+`year`, sometimes by
+`student_tz` alone - never by date) **depends entirely on base klass
+being immutable per year**, confirmed as a real business rule. If that
+rule is ever relaxed, every report joining `student_base_klass` needs to
+become date-aware or a student with 2+ base-klass periods in a year will
+get double-counted. Reproduced this empirically before the rule was
+confirmed (a student with 2 same-type periods showed 2x the correct
+lesson count in `getDiaryLessonsTotal`). This is independent of whether
+the "deferred: reports" section above ever gets picked up - it's a
+standing constraint on the data model, not just on these specific
+queries.

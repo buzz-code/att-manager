@@ -38,8 +38,6 @@ const getColumns = ({ studentsByYear, klasses }) => [
     ...getPropsForAutoComplete('year', yearsList),
     initialEditValue: defaultYear,
   },
-  { field: 'start_date', title: 'תאריך התחלה', type: 'date' },
-  { field: 'end_date', title: 'תאריך סיום', type: 'date' },
 ];
 const getFilters = ({ studentsByYear, klasses }) => [
   {
@@ -67,37 +65,11 @@ const getFilters = ({ studentsByYear, klasses }) => [
     defaultValue: defaultYear,
     disabled: true,
   },
-  {
-    field: 'student_klasses.start_date',
-    label: 'תאריך התחלה מ',
-    type: 'date',
-    operator: 'date-before-or-null',
-    defaultValue: today(),
-  },
-  {
-    field: 'student_klasses.start_date',
-    label: 'תאריך התחלה עד',
-    type: 'date',
-    operator: 'date-after-or-null',
-  },
-  {
-    field: 'student_klasses.end_date',
-    label: 'תאריך סיום מ',
-    type: 'date',
-    operator: 'date-before-or-null',
-  },
-  {
-    field: 'student_klasses.end_date',
-    label: 'תאריך סיום עד',
-    type: 'date',
-    operator: 'date-after-or-null',
-    defaultValue: today(),
-  },
 ];
 const isBaseKlassRow = (rowData, klasses, baseKlassTypeId) =>
   klasses?.find((k) => k.key === rowData.klass_id)?.klass_type_id === baseKlassTypeId;
 
-const getActions = (handleOpenSwitchKlass, handleOpenHistory, klasses, baseKlassTypeId) => [
+const getActions = (handleOpenSwitchKlass, klasses, baseKlassTypeId) => [
   (rowData) => ({
     icon: 'swap_horiz',
     tooltip: isBaseKlassRow(rowData, klasses, baseKlassTypeId)
@@ -105,11 +77,6 @@ const getActions = (handleOpenSwitchKlass, handleOpenHistory, klasses, baseKlass
       : 'העבר לכיתה אחרת',
     disabled: isBaseKlassRow(rowData, klasses, baseKlassTypeId),
     onClick: () => handleOpenSwitchKlass(rowData),
-  }),
-  (rowData) => ({
-    icon: 'history',
-    tooltip: 'הצג היסטוריית שיוכים',
-    onClick: () => handleOpenHistory(rowData),
   }),
 ];
 
@@ -182,61 +149,13 @@ const SwitchKlassDialog = ({ open, row, klasses, students, onClose, onConfirm })
   );
 };
 
-const formatPeriod = (start_date, end_date) =>
-  `${start_date || 'מתחילת השנה'} - ${end_date || 'היום'}`;
-
-const StudentHistoryDialog = ({ open, row, students, history, onClose }) => {
-  const studentName = getOptionLabelFunc(students, 'tz')(row?.student_tz) || row?.student_tz;
-  const baseEntry = history?.find((item) => item.klass_id === row?.klass_id) ?? history?.[0];
-  const otherEntries = history?.filter((item) => item !== baseEntry) ?? [];
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>היסטוריית שיוכים - {studentName}</DialogTitle>
-      <DialogContent>
-        {!history ? (
-          <p>טוען...</p>
-        ) : history.length === 0 ? (
-          <p>לא נמצאו שיוכים.</p>
-        ) : (
-          <>
-            {baseEntry && (
-              <p>
-                <b>כיתת בסיס:</b> {baseEntry.klass_name}
-              </p>
-            )}
-            {otherEntries.length > 0 && (
-              <>
-                <p>
-                  <b>היסטוריית שיוכים נוספים:</b>
-                </p>
-                <ul>
-                  {otherEntries.map((item) => (
-                    <li key={item.id}>
-                      {item.klass_name} ({formatPeriod(item.start_date, item.end_date)})
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>סגור</Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
 const StudentKlassesContainer = ({ entity, title }) => {
   const dispatch = useDispatch();
   const {
-    GET: { 'get-edit-data': editData, history: historyData },
+    GET: { 'get-edit-data': editData },
   } = useSelector((state) => state[entity]);
   const tableRef = useRef();
   const [switchDialogRow, setSwitchDialogRow] = useState(null);
-  const [historyDialogRow, setHistoryDialogRow] = useState(null);
 
   const columns = useMemo(() => getColumns(editData || {}), [editData]);
   const filters = useMemo(() => getFilters(editData || {}), [editData]);
@@ -253,30 +172,9 @@ const StudentKlassesContainer = ({ entity, title }) => {
     [dispatch, entity]
   );
 
-  const handleOpenHistory = useCallback(
-    (rowData) => {
-      setHistoryDialogRow(rowData);
-      dispatch(crudAction.clearState(entity, 'GET', 'history'));
-      dispatch(
-        crudAction.customHttpRequest(entity, 'GET', 'history', {
-          student_tz: rowData.student_tz,
-          year: rowData.year,
-        })
-      );
-    },
-    [dispatch, entity]
-  );
-  const handleCloseHistory = useCallback(() => setHistoryDialogRow(null), []);
-
   const actions = useMemo(
-    () =>
-      getActions(
-        handleOpenSwitchKlass,
-        handleOpenHistory,
-        editData?.klasses,
-        editData?.baseKlassTypeId
-      ),
-    [handleOpenSwitchKlass, handleOpenHistory, editData]
+    () => getActions(handleOpenSwitchKlass, editData?.klasses, editData?.baseKlassTypeId),
+    [handleOpenSwitchKlass, editData]
   );
 
   useEffect(() => {
@@ -300,13 +198,6 @@ const StudentKlassesContainer = ({ entity, title }) => {
         students={editData?.studentsByYear}
         onClose={handleCloseSwitchKlass}
         onConfirm={handleConfirmSwitchKlass}
-      />
-      <StudentHistoryDialog
-        open={!!historyDialogRow}
-        row={historyDialogRow}
-        students={editData?.studentsByYear}
-        history={historyDialogRow ? historyData : null}
-        onClose={handleCloseHistory}
       />
     </>
   );

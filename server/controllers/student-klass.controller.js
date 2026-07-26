@@ -12,61 +12,6 @@ import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../ut
 export const { findById, store, update, destroy, uploadMultiple } = genericController(StudentKlass);
 
 /**
- * Apply a NULL-safe date comparison against another joined table's column, so rows with a blank
- * date column stay visible (e.g. keep a student_klasses row whose start_date/end_date is unset,
- * when checking whether it was active on a given diary_lessons.lesson_date).
- *
- * `referenceColumn` is always a column identifier, never a literal value - see applyNullSafeDateLiteralFilter
- * for comparing against a literal value instead.
- *
- * @param {object} qb query builder
- * @param {string} column
- * @param {'<='|'>='} operator
- * @param {string} referenceColumn e.g. 'diary_lessons.lesson_date'
- */
-export function applyNullSafeDateColumnFilter(qb, column, operator, referenceColumn) {
-    qb.whereRaw(`(?? IS NULL OR ?? ${operator} ??)`, [column, column, referenceColumn]);
-}
-
-/**
- * Apply a NULL-safe date comparison against a literal date value.
- *
- * @param {object} qb query builder
- * @param {string} column
- * @param {'<='|'>='} operator
- * @param {string} value literal date value, e.g. '2026-07-26'
- */
-export function applyNullSafeDateLiteralFilter(qb, column, operator, value) {
-    qb.whereRaw(`(?? IS NULL OR ?? ${operator} ?)`, [column, column, moment(value).format('YYYY-MM-DD')]);
-}
-
-/**
- * Extract the `active_at` filter out of the filters object, returning its value and the remaining filters.
- * It's synthetic (not a real column) since it expands into a NULL-safe range check across two columns
- * (start_date/end_date), which the generic single-field applyFilters can't express.
- *
- * @param {string} filtersString
- * @returns {{ activeAt: string|null, filtersString: string }}
- */
-export function getActiveAtFilter(filtersString) {
-    if (!filtersString) {
-        return { activeAt: null, filtersString };
-    }
-    const filtersObj = JSON.parse(filtersString);
-    let activeAt = null;
-    const remainingFilters = {};
-    Object.entries(filtersObj).forEach(([key, filter]) => {
-        if (filter.field === 'active_at' && filter.value) {
-            activeAt = filter.value;
-        } else {
-            remainingFilters[key] = filter;
-        }
-    });
-
-    return { activeAt, filtersString: JSON.stringify(remainingFilters) };
-}
-
-/**
  * Find all the items
  *
  * @param {object} req
@@ -149,48 +94,6 @@ export async function switchKlass(req, res) {
 }
 
 /**
- * Get a student's full klass-assignment history (all klass types, all periods) for a year,
- * so a manager can see the whole story rather than one disconnected grid row at a time.
- *
- * @param {object} req
- * @param {object} res
- * @returns {*}
- */
-export async function getHistory(req, res) {
-    const { student_tz, year } = req.query;
-    if (!student_tz) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-            error: 'יש לבחור תלמידה.',
-        });
-    }
-    const history = await new StudentKlass()
-        .where({
-            'student_klasses.student_tz': student_tz,
-            'student_klasses.user_id': req.currentUser.id,
-            'student_klasses.year': year ?? defaultYear,
-        })
-        .query(qb => {
-            qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
-            qb.orderBy('student_klasses.start_date', 'asc')
-            qb.select({
-                id: 'student_klasses.id',
-                klass_id: 'student_klasses.klass_id',
-                klass_name: 'klasses.name',
-                klass_type_id: 'klasses.klass_type_id',
-                start_date: 'student_klasses.start_date',
-                end_date: 'student_klasses.end_date',
-            })
-        })
-        .fetchAll()
-        .then(result => result.toJSON());
-
-    res.json({
-        error: null,
-        data: history,
-    });
-}
-
-/**
  * Get edit data
  *
  * @param {object} req
@@ -238,18 +141,13 @@ export async function getEditData(req, res) {
  * @returns {*}
  */
 export async function reportByKlassType(req, res) {
-    const { activeAt, filtersString } = getActiveAtFilter(req.query.filters);
     const dbQuery = new StudentKlass()
         .where({ 'klasses.user_id': req.currentUser.id })
         .query(qb => {
             qb.leftJoin('students', 'students.tz', 'student_klasses.student_tz')
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
-            if (activeAt) {
-                applyNullSafeDateLiteralFilter(qb, 'student_klasses.start_date', '<=', activeAt);
-                applyNullSafeDateLiteralFilter(qb, 'student_klasses.end_date', '>=', activeAt);
-            }
         });
-    applyFilters(dbQuery, filtersString);
+    applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()
         .countDistinct({ count: ['students.id'] })
         .then(res => res[0].count);
