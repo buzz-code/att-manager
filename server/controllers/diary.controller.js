@@ -160,7 +160,9 @@ export async function reportByDates(req, res) {
             qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
+            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
             // qb.where('diary_instances.student_att_key', '=', STUDENT_ABS_KEY)
         });
     applyFilters(dbQuery, req.query.filters);
@@ -302,11 +304,13 @@ function getDiaryInstancesQuery(user_id, filters) {
             qb.innerJoin('diaries', 'diaries.id', 'diary_lessons.diary_id')
             qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
             qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.innerJoin('teachers', 'teachers.tz', 'groups.teacher_id')
             qb.innerJoin('lessons', 'lessons.key', 'groups.lesson_id')
             qb.innerJoin('att_types', 'att_types.key', 'diary_instances.student_att_key')
             qb.leftJoin('student_base_klass', { 'student_base_klass.student_tz': 'students.tz', 'student_base_klass.year': 'groups.year' })
             qb.whereNotNull('diary_instances.student_att_key')
+            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, filters);
     return dbQuery;
@@ -384,8 +388,12 @@ export async function getDiaryLessonsTotal(req, res) {
         .query(qb => {
             qb.leftJoin('student_base_klass', 'student_base_klass.student_tz', 'students.tz',)
             qb.join('diaries')
+            qb.innerJoin('groups', 'groups.id', 'diaries.group_id')
+            qb.innerJoin('klasses', 'klasses.key', 'groups.klass_id')
+            qb.innerJoin('student_klasses', { 'student_klasses.klass_id': 'klasses.key', 'student_klasses.student_tz': 'students.tz' })
             qb.innerJoin('diary_lessons', 'diary_lessons.diary_id', 'diaries.id')
             qb.leftJoin('diary_instances', { 'diary_instances.diary_lesson_id': 'diary_lessons.id', 'diary_instances.student_tz': 'students.tz' })
+            applyActiveStudentKlassFilter(qb, 'diary_lessons.lesson_date');
         });
     applyFilters(dbQuery, req.query.filters);
     const countQuery = dbQuery.clone().query()

@@ -36,7 +36,7 @@ export function applyNullSafeDateColumnFilter(qb, column, operator, referenceCol
  * @param {'<='|'>='} operator
  * @param {string} value literal date value, e.g. '2026-07-26'
  */
-function applyNullSafeDateLiteralFilter(qb, column, operator, value) {
+export function applyNullSafeDateLiteralFilter(qb, column, operator, value) {
     qb.whereRaw(`(?? IS NULL OR ?? ${operator} ?)`, [column, column, moment(value).format('YYYY-MM-DD')]);
 }
 
