@@ -13,7 +13,7 @@ const supportedEntities = [
   {
     value: entities.STUDENT_KLASSES,
     title: titles.STUDENT_KLASSES,
-    columns: ['student_tz', 'klass_id', 'year'],
+    columns: ['student_tz', 'klass_id', 'year', 'start_date', 'end_date'],
   },
   {
     value: entities.GROUPS,

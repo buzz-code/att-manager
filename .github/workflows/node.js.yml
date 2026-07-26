@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  deploy:
+  deploy-pm2:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,7 +19,8 @@ jobs:
           script: |
             cd ~/${{ github.event.repository.name }}
             git pull origin master
-            git submodule update --init
-            npm install --production
+            git submodule update --init --recursive
+            npm install --no-save
             npm run webpack:prod
+            npm run migrate
             pm2 restart ${{ github.event.repository.name }}
