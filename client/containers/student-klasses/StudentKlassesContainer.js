@@ -94,10 +94,16 @@ const getFilters = ({ studentsByYear, klasses }) => [
     defaultValue: today(),
   },
 ];
-const getActions = (handleOpenSwitchKlass) => [
+const isBaseKlassRow = (rowData, klasses, baseKlassTypeId) =>
+  klasses?.find((k) => k.key === rowData.klass_id)?.klass_type_id === baseKlassTypeId;
+
+const getActions = (handleOpenSwitchKlass, klasses, baseKlassTypeId) => [
   (rowData) => ({
     icon: 'swap_horiz',
-    tooltip: 'העבר לכיתה אחרת',
+    tooltip: isBaseKlassRow(rowData, klasses, baseKlassTypeId)
+      ? 'לא ניתן להחליף כיתת בסיס - היא קבועה לאורך השנה'
+      : 'העבר לכיתה אחרת',
+    disabled: isBaseKlassRow(rowData, klasses, baseKlassTypeId),
     onClick: () => handleOpenSwitchKlass(rowData),
   }),
 ];
@@ -113,8 +119,13 @@ const SwitchKlassDialog = ({ open, row, klasses, students, onClose, onConfirm })
     }
   }, [open, row]);
 
+  const currentKlass = klasses?.find((k) => k.key === row?.klass_id);
   const currentKlassName = getOptionLabelFunc(klasses, 'key')(row?.klass_id);
   const studentName = getOptionLabelFunc(students, 'tz')(row?.student_tz) || row?.student_tz;
+  // only offer klasses of the same type - switching type (e.g. speciality -> maasit) isn't a "switch", and base klasses never change
+  const sameTypeKlasses = klasses?.filter(
+    (k) => k.klass_type_id === currentKlass?.klass_type_id && k.key !== row?.klass_id
+  );
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -128,9 +139,9 @@ const SwitchKlassDialog = ({ open, row, klasses, students, onClose, onConfirm })
           margin="normal"
         />
         <Autocomplete
-          options={klasses || []}
-          getOptionLabel={getOptionLabelFunc(klasses, 'key')}
-          value={klasses?.find((k) => k.key === newKlassId) ?? null}
+          options={sameTypeKlasses || []}
+          getOptionLabel={getOptionLabelFunc(sameTypeKlasses, 'key')}
+          value={sameTypeKlasses?.find((k) => k.key === newKlassId) ?? null}
           onChange={(e, value) => setNewKlassId(value?.key ?? '')}
           renderInput={(params) => (
             <TextField
@@ -189,7 +200,10 @@ const StudentKlassesContainer = ({ entity, title }) => {
     [dispatch, entity]
   );
 
-  const actions = useMemo(() => getActions(handleOpenSwitchKlass), [handleOpenSwitchKlass]);
+  const actions = useMemo(
+    () => getActions(handleOpenSwitchKlass, editData?.klasses, editData?.baseKlassTypeId),
+    [handleOpenSwitchKlass, editData]
+  );
 
   useEffect(() => {
     dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data', { year: defaultYear }));
