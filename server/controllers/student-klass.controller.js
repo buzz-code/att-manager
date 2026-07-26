@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes';
+import moment from 'moment';
 import StudentKlass from '../models/student-klass.model';
 import Student from '../models/student.model';
 import Klass from '../models/klass.model';
@@ -9,57 +11,39 @@ import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../ut
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(StudentKlass);
 
-const DATE_RANGE_FIELDS = ['student_klasses.start_date', 'student_klasses.end_date'];
-const DATE_FILTER_OPERATORS = {
-    'date-after': '>=',
-    'date-before': '<=',
-};
-const COLUMN_REF_REGEXP = /^[a-zA-Z_][\w]*\.[a-zA-Z_][\w]*$/;
-
 /**
- * Apply a NULL-safe date comparison, so rows with a blank date column stay visible.
- * `value` can be a literal date value, or a column reference (e.g. 'diary_lessons.lesson_date').
+ * Apply a NULL-safe date comparison against another joined table's column, so rows with a blank
+ * date column stay visible (e.g. keep a student_klasses row whose start_date/end_date is unset,
+ * when checking whether it was active on a given diary_lessons.lesson_date).
+ *
+ * `referenceColumn` is always a column identifier, never a literal value - see applyNullSafeDateLiteralFilter
+ * for comparing against a literal value instead.
  *
  * @param {object} qb query builder
  * @param {string} column
- * @param {string} operator one of '>=', '<='
- * @param {string} value
+ * @param {'<='|'>='} operator
+ * @param {string} referenceColumn e.g. 'diary_lessons.lesson_date'
  */
-export function applyNullSafeDateFilter(qb, column, operator, value) {
-    if (COLUMN_REF_REGEXP.test(value)) {
-        qb.whereRaw(`(?? IS NULL OR ?? ${operator} ??)`, [column, column, value]);
-    } else {
-        qb.whereRaw(`(?? IS NULL OR ?? ${operator} ?)`, [column, column, value]);
-    }
+export function applyNullSafeDateColumnFilter(qb, column, operator, referenceColumn) {
+    qb.whereRaw(`(?? IS NULL OR ?? ${operator} ??)`, [column, column, referenceColumn]);
 }
 
 /**
- * Intercept the student_klasses start_date/end_date range filters and apply them in a NULL-safe way,
- * returning the remaining filters (as a JSON string) to be handled by applyFilters.
+ * Apply a NULL-safe date comparison against a literal date value.
  *
- * @param {object} dbQuery
- * @param {string} filtersString
- * @returns {string}
+ * @param {object} qb query builder
+ * @param {string} column
+ * @param {'<='|'>='} operator
+ * @param {string} value literal date value, e.g. '2026-07-26'
  */
-function applyStudentKlassesDateRangeFilters(dbQuery, filtersString) {
-    if (!filtersString) {
-        return filtersString;
-    }
-    const filtersObj = JSON.parse(filtersString);
-    const remainingFilters = {};
-    Object.entries(filtersObj).forEach(([key, filter]) => {
-        const sqlOperator = DATE_FILTER_OPERATORS[filter.operator];
-        if (DATE_RANGE_FIELDS.includes(filter.field) && sqlOperator && filter.value) {
-            dbQuery.query(qb => applyNullSafeDateFilter(qb, filter.field, sqlOperator, filter.value));
-        } else {
-            remainingFilters[key] = filter;
-        }
-    });
-    return JSON.stringify(remainingFilters);
+function applyNullSafeDateLiteralFilter(qb, column, operator, value) {
+    qb.whereRaw(`(?? IS NULL OR ?? ${operator} ?)`, [column, column, moment(value).format('YYYY-MM-DD')]);
 }
 
 /**
  * Extract the `active_at` filter out of the filters object, returning its value and the remaining filters.
+ * It's synthetic (not a real column) since it expands into a NULL-safe range check across two columns
+ * (start_date/end_date), which the generic single-field applyFilters can't express.
  *
  * @param {string} filtersString
  * @returns {{ activeAt: string|null, filtersString: string }}
@@ -78,6 +62,7 @@ export function getActiveAtFilter(filtersString) {
             remainingFilters[key] = filter;
         }
     });
+
     return { activeAt, filtersString: JSON.stringify(remainingFilters) };
 }
 
@@ -96,9 +81,60 @@ export async function findAll(req, res) {
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
             qb.select('student_klasses.*')
         });
-    const remainingFilters = applyStudentKlassesDateRangeFilters(dbQuery, req.query.filters);
-    applyFilters(dbQuery, remainingFilters);
+    applyFilters(dbQuery, req.query.filters);
     fetchPage({ dbQuery }, req.query, res);
+}
+
+/**
+ * Close the current student_klass assignment and open a new one with a different klass,
+ * in a single atomic action - e.g. a student moving from one klass to another mid-year.
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+export async function switchKlass(req, res) {
+    const { id, newKlassId, switchDate } = req.body;
+    if (!id || !newKlassId) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+            error: 'יש לבחור שיוך קיים וכיתה חדשה.',
+        });
+    }
+    const effectiveDate = moment(switchDate || undefined).format('YYYY-MM-DD');
+
+    try {
+        await bookshelf.transaction(async trx => {
+            const current = await new StudentKlass()
+                .where({ id, user_id: req.currentUser.id })
+                .fetch({ require: true, transacting: trx });
+
+            const previousEndDate = moment(effectiveDate).subtract(1, 'day').format('YYYY-MM-DD');
+            const currentStartDate = current.get('start_date');
+            if (currentStartDate && moment(previousEndDate).isBefore(moment(currentStartDate), 'day')) {
+                throw new Error('תאריך המעבר חייב להיות אחרי תאריך תחילת השיוך הקיים.');
+            }
+
+            await current.save({ end_date: previousEndDate }, { patch: true, transacting: trx });
+
+            await new StudentKlass({
+                user_id: req.currentUser.id,
+                student_tz: current.get('student_tz'),
+                klass_id: newKlassId,
+                year: current.get('year'),
+                start_date: effectiveDate,
+                end_date: null,
+            }).save(null, { transacting: trx });
+        });
+    } catch (e) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            error: e.message,
+        });
+    }
+
+    res.json({
+        error: null,
+        data: { message: 'הכיתה הוחלפה בהצלחה.' }
+    });
 }
 
 /**
@@ -153,8 +189,8 @@ export async function reportByKlassType(req, res) {
             qb.leftJoin('students', 'students.tz', 'student_klasses.student_tz')
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
             if (activeAt) {
-                applyNullSafeDateFilter(qb, 'student_klasses.start_date', '<=', activeAt);
-                applyNullSafeDateFilter(qb, 'student_klasses.end_date', '>=', activeAt);
+                applyNullSafeDateLiteralFilter(qb, 'student_klasses.start_date', '<=', activeAt);
+                applyNullSafeDateLiteralFilter(qb, 'student_klasses.end_date', '>=', activeAt);
             }
         });
     applyFilters(dbQuery, filtersString);

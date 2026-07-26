@@ -12,6 +12,10 @@ const router = genericRoute(studentKlassCtrl, router => {
         .get((req, res) => {
             studentKlassCtrl.reportByKlassType(req, res);
         });
+    router.route('/switch-klass')
+        .post((req, res) => {
+            studentKlassCtrl.switchKlass(req, res);
+        });
     router.route('/report-by-klass-type/export-pdf')
         .post((req, res) => {
             exportPdf(req, res);
