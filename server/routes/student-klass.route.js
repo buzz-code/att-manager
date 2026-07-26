@@ -16,6 +16,10 @@ const router = genericRoute(studentKlassCtrl, router => {
         .post((req, res) => {
             studentKlassCtrl.switchKlass(req, res);
         });
+    router.route('/history')
+        .get((req, res) => {
+            studentKlassCtrl.getHistory(req, res);
+        });
     router.route('/report-by-klass-type/export-pdf')
         .post((req, res) => {
             exportPdf(req, res);

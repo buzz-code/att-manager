@@ -149,6 +149,48 @@ export async function switchKlass(req, res) {
 }
 
 /**
+ * Get a student's full klass-assignment history (all klass types, all periods) for a year,
+ * so a manager can see the whole story rather than one disconnected grid row at a time.
+ *
+ * @param {object} req
+ * @param {object} res
+ * @returns {*}
+ */
+export async function getHistory(req, res) {
+    const { student_tz, year } = req.query;
+    if (!student_tz) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+            error: 'יש לבחור תלמידה.',
+        });
+    }
+    const history = await new StudentKlass()
+        .where({
+            'student_klasses.student_tz': student_tz,
+            'student_klasses.user_id': req.currentUser.id,
+            'student_klasses.year': year ?? defaultYear,
+        })
+        .query(qb => {
+            qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
+            qb.orderBy('student_klasses.start_date', 'asc')
+            qb.select({
+                id: 'student_klasses.id',
+                klass_id: 'student_klasses.klass_id',
+                klass_name: 'klasses.name',
+                klass_type_id: 'klasses.klass_type_id',
+                start_date: 'student_klasses.start_date',
+                end_date: 'student_klasses.end_date',
+            })
+        })
+        .fetchAll()
+        .then(result => result.toJSON());
+
+    res.json({
+        error: null,
+        data: history,
+    });
+}
+
+/**
  * Get edit data
  *
  * @param {object} req
