@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment';
 
 import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
@@ -39,6 +40,13 @@ const getFilters = ({ students, klasses }) => [
     list: yearsList,
     defaultValue: defaultYear,
     disabled: true,
+  },
+  {
+    field: 'active_at',
+    label: 'נכון לתאריך',
+    type: 'date',
+    operator: 'eq',
+    defaultValue: moment().format('YYYY-MM-DD'),
   },
 ];
 

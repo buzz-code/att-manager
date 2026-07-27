@@ -12,6 +12,44 @@ import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../ut
 export const { findById, store, update, destroy, uploadMultiple } = genericController(StudentKlass);
 
 /**
+ * Apply a NULL-safe date comparison against a literal date value.
+ *
+ * @param {object} qb query builder
+ * @param {string} column
+ * @param {'<='|'>='} operator
+ * @param {string} value literal date value, e.g. '2026-07-26'
+ */
+export function applyNullSafeDateLiteralFilter(qb, column, operator, value) {
+    qb.whereRaw(`(?? IS NULL OR ?? ${operator} ?)`, [column, column, moment(value).format('YYYY-MM-DD')]);
+}
+
+/**
+ * Extract the `active_at` filter out of the filters object, returning its value and the remaining filters.
+ * It's synthetic (not a real column) since it expands into a NULL-safe range check across two columns
+ * (start_date/end_date), which the generic single-field applyFilters can't express.
+ *
+ * @param {string} filtersString
+ * @returns {{ activeAt: string|null, filtersString: string }}
+ */
+export function getActiveAtFilter(filtersString) {
+    if (!filtersString) {
+        return { activeAt: null, filtersString };
+    }
+    const filtersObj = JSON.parse(filtersString);
+    let activeAt = null;
+    const remainingFilters = {};
+    Object.entries(filtersObj).forEach(([key, filter]) => {
+        if (filter.field === 'active_at' && filter.value) {
+            activeAt = filter.value;
+        } else {
+            remainingFilters[key] = filter;
+        }
+    });
+
+    return { activeAt, filtersString: JSON.stringify(remainingFilters) };
+}
+
+/**
  * Find all the items
  *
  * @param {object} req
@@ -141,13 +179,18 @@ export async function getEditData(req, res) {
  * @returns {*}
  */
 export async function reportByKlassType(req, res) {
+    const { activeAt, filtersString } = getActiveAtFilter(req.query.filters);
     const dbQuery = new StudentKlass()
         .where({ 'klasses.user_id': req.currentUser.id })
         .query(qb => {
             qb.leftJoin('students', 'students.tz', 'student_klasses.student_tz')
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
+            if (activeAt) {
+                applyNullSafeDateLiteralFilter(qb, 'student_klasses.start_date', '<=', activeAt);
+                applyNullSafeDateLiteralFilter(qb, 'student_klasses.end_date', '>=', activeAt);
+            }
         });
-    applyFilters(dbQuery, req.query.filters);
+    applyFilters(dbQuery, filtersString);
     const countQuery = dbQuery.clone().query()
         .countDistinct({ count: ['students.id'] })
         .then(res => res[0].count);
