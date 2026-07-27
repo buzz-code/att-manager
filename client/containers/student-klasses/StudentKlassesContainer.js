@@ -13,6 +13,7 @@ import Table from '../../../common-modules/client/components/table/Table';
 import * as crudAction from '../../../common-modules/client/actions/crudAction';
 import { getPropsForAutoComplete } from '../../../common-modules/client/utils/formUtil';
 import { getOptionLabelFunc } from '../../../common-modules/client/utils/queryUtil';
+import { toDateOnlyString } from '../../../common-modules/client/utils/dateUtil';
 
 import { defaultYear, yearsList } from '../../services/yearService';
 
@@ -171,6 +172,15 @@ const StudentKlassesContainer = ({ entity, title }) => {
 
   const actions = useMemo(() => getActions(handleOpenSwitchKlass), [handleOpenSwitchKlass]);
 
+  const manipulateDataToSave = useCallback(
+    (dataToSave) => ({
+      ...dataToSave,
+      start_date: toDateOnlyString(dataToSave.start_date),
+      end_date: toDateOnlyString(dataToSave.end_date),
+    }),
+    []
+  );
+
   useEffect(() => {
     dispatch(crudAction.customHttpRequest(entity, 'GET', 'get-edit-data', { year: defaultYear }));
   }, []);
@@ -184,6 +194,7 @@ const StudentKlassesContainer = ({ entity, title }) => {
         filters={filters}
         additionalActions={actions}
         externalTableRef={tableRef}
+        manipulateDataToSave={manipulateDataToSave}
       />
       <SwitchKlassDialog
         open={!!switchDialogRow}
