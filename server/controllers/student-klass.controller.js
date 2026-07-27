@@ -91,17 +91,6 @@ export async function switchKlass(req, res) {
                 .where({ id, user_id: req.currentUser.id })
                 .fetch({ require: true, transacting: trx });
 
-            const [currentKlass, newKlass] = await Promise.all([
-                new Klass().where({ key: current.get('klass_id'), user_id: req.currentUser.id }).fetch({ require: true, transacting: trx }),
-                new Klass().where({ key: newKlassId, user_id: req.currentUser.id }).fetch({ require: true, transacting: trx }),
-            ]);
-            if (currentKlass.get('klass_type_id') === KLASS_TYPE_BASE) {
-                throw new Error('לא ניתן להחליף את כיתת הבסיס של תלמידה - היא קבועה לאורך כל השנה.');
-            }
-            if (newKlass.get('klass_type_id') !== currentKlass.get('klass_type_id')) {
-                throw new Error('ניתן להחליף רק לכיתה מאותו סוג (התמחות או עבודה מעשית).');
-            }
-
             const previousEndDate = moment(effectiveDate).subtract(1, 'day').format('YYYY-MM-DD');
             const currentStartDate = current.get('start_date');
             if (currentStartDate && moment(previousEndDate).isBefore(moment(currentStartDate), 'day')) {
@@ -160,14 +149,11 @@ export async function getEditData(req, res) {
     const [students, studentsByYear, klasses] = await Promise.all([
         getListFromTable(Student, req.currentUser.id, 'tz'),
         getStudentByYear(req.query.year ?? defaultYear),
-        new Klass().where({ user_id: req.currentUser.id, year: req.query.year ?? defaultYear })
-            .query({ select: ['key', 'name', 'klass_type_id'] })
-            .fetchAll()
-            .then(result => result.toJSON()),
+        getListFromTable(Klass, req.currentUser.id, 'key', { year: req.query.year ?? defaultYear }),
     ]);
     res.json({
         error: null,
-        data: { students, studentsByYear, klasses, baseKlassTypeId: KLASS_TYPE_BASE }
+        data: { students, studentsByYear, klasses }
     });
 }
 

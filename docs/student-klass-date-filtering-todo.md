@@ -12,12 +12,12 @@ Kept deliberately minimal:
    actually worked - see commit `678ac69`.
 3. **Switch-klass action** - `POST /student-klasses/switch-klass` closes the
    current assignment (`end_date`) and opens a new one atomically, plus a
-   row action + dialog in the grid. Enforces the business rule that a
-   student's BASE-type klass is fixed for the year - only
-   speciality/maasit assignments are switchable (rejects otherwise).
-   `get-edit-data` returns `klass_type_id` per klass + `baseKlassTypeId` so
-   the client can apply that rule without hardcoding the type-id
-   convention.
+   row action + dialog in the grid. It does **not** enforce the
+   base-klass-is-fixed business rule - that guard existed (commit
+   `1bd49d9`) and was deliberately removed by explicit request. It's
+   possible to switch a base-type klass, or switch across klass types,
+   through this action right now. See "load-bearing assumption" below -
+   this is no longer just a hypothetical risk.
 
 Everything below was built, tested, and working, then **deliberately
 reverted** out of this PR to keep it small. Nothing was lost - it's all
@@ -98,17 +98,24 @@ showing the fixed base klass and a chronological list of the other
 periods. Cherry-pick that commit (on top of the current controller/route
 files, it applies close to cleanly) rather than rebuilding.
 
-## Load-bearing assumption to not forget
+## Load-bearing assumption to not forget - NOW UNENFORCED, read this first
 
 The safety of the loose `student_base_klass` joins throughout
 `diary.controller.js` (joined by `student_tz`+`year`, sometimes by
 `student_tz` alone - never by date) **depends entirely on base klass
-being immutable per year**, confirmed as a real business rule. If that
-rule is ever relaxed, every report joining `student_base_klass` needs to
-become date-aware or a student with 2+ base-klass periods in a year will
-get double-counted. Reproduced this empirically before the rule was
-confirmed (a student with 2 same-type periods showed 2x the correct
-lesson count in `getDiaryLessonsTotal`). This is independent of whether
-the "deferred: reports" section above ever gets picked up - it's a
-standing constraint on the data model, not just on these specific
-queries.
+being immutable per year**. If that rule is ever violated, every report
+joining `student_base_klass` needs to become date-aware or a student with
+2+ base-klass periods in a year will get double-counted. Reproduced this
+empirically (a student with 2 same-type periods showed 2x the correct
+lesson count in `getDiaryLessonsTotal`).
+
+**As of commit removing the switch-klass type guard, nothing in the app
+enforces this rule anymore** - `switchKlass` will happily switch a
+base-type assignment or switch across klass types. The rule is currently
+a matter of user discipline, not code. Since `diary.controller.js`'s
+report fixes are also deferred (see above), the two gaps compound: it's
+now possible to *create* the exact data shape (a student with 2+
+base-klass periods in a year) that the *reports* don't yet know how to
+handle correctly. This isn't hypothetical anymore - if it becomes a real
+problem, either restore the guard (commit `1bd49d9`) or pick up the
+deferred report fixes (or both).
