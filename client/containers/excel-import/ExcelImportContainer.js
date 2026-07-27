@@ -6,14 +6,35 @@ import ExcelImport from '../../../common-modules/client/components/excel-import/
 
 const title = 'העלאת קובץ';
 const supportedEntities = [
-  { value: entities.TEACHERS, title: titles.TEACHERS, columns: ['tz', 'name', 'phone', 'phone2', 'address', 'city'] },
-  { value: entities.STUDENTS, title: titles.STUDENTS, columns: ['tz', 'name', 'address', 'city', 'phone', 'mother_phone', 'father_phone', 'birth_date', 'school_klass', 'father_name', 'comment', 'year'] },
+  {
+    value: entities.TEACHERS,
+    title: titles.TEACHERS,
+    columns: ['tz', 'name', 'phone', 'phone2', 'address', 'city'],
+  },
+  {
+    value: entities.STUDENTS,
+    title: titles.STUDENTS,
+    columns: [
+      'tz',
+      'name',
+      'address',
+      'city',
+      'phone',
+      'mother_phone',
+      'father_phone',
+      'birth_date',
+      'school_klass',
+      'father_name',
+      'comment',
+      'year',
+    ],
+  },
   { value: entities.LESSONS, title: titles.LESSONS, columns: ['key', 'name', 'year'] },
   { value: entities.KLASSS, title: titles.KLASSS, columns: ['key', 'name', 'year'] },
   {
     value: entities.STUDENT_KLASSES,
     title: titles.STUDENT_KLASSES,
-    columns: ['student_tz', 'klass_id', 'year'],
+    columns: ['student_tz', 'klass_id', 'year', 'start_date', 'end_date'],
   },
   {
     value: entities.GROUPS,
