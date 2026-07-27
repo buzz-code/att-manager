@@ -67,6 +67,12 @@ const getFilters = ({ studentsByYear, klasses }) => [
     defaultValue: defaultYear,
     disabled: true,
   },
+  {
+    field: 'active_at',
+    label: 'נכון לתאריך',
+    type: 'date',
+    operator: 'eq',
+  },
 ];
 const getActions = (handleOpenSwitchKlass) => [
   (rowData) => ({

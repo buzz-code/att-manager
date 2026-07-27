@@ -57,14 +57,19 @@ export function getActiveAtFilter(filtersString) {
  * @returns {*}
  */
 export async function findAll(req, res) {
+    const { activeAt, filtersString } = getActiveAtFilter(req.query.filters);
     const dbQuery = new StudentKlass()
         .where({ 'student_klasses.user_id': req.currentUser.id })
         .query(qb => {
             qb.leftJoin('students', 'students.tz', 'student_klasses.student_tz')
             qb.leftJoin('klasses', 'klasses.key', 'student_klasses.klass_id')
             qb.select('student_klasses.*')
+            if (activeAt) {
+                applyNullSafeDateLiteralFilter(qb, 'student_klasses.start_date', '<=', activeAt);
+                applyNullSafeDateLiteralFilter(qb, 'student_klasses.end_date', '>=', activeAt);
+            }
         });
-    applyFilters(dbQuery, req.query.filters);
+    applyFilters(dbQuery, filtersString);
     fetchPage({ dbQuery }, req.query, res);
 }
 
