@@ -1,3 +1,4 @@
+import moment from "moment";
 import Klass from "../models/klass.model";
 import Teacher from "../models/teacher.model";
 import AttType from "../models/att-type.model";
@@ -7,6 +8,7 @@ import Lesson from "../models/lesson.model";
 import Group from "../models/group.model";
 import Diary, { DiaryInstance } from "../models/diary.model";
 import { getDaysByLessonCount } from "../../common-modules/server/utils/diary";
+import { applyNullSafeDateLiteralFilter } from "../controllers/student-klass.controller";
 
 export function getUserByPhone(phone_number) {
     return new User().where({ phone_number })
@@ -33,7 +35,12 @@ export function getLessonByUserIdAndLessonId(user_id, key) {
 }
 
 export function getStudentsByUserIdAndKlassIdAndYear(user_id, klass_id, year) {
+    const today = moment().format('YYYY-MM-DD');
     return new StudentKlass().where({ user_id, klass_id, year })
+        .query(qb => {
+            applyNullSafeDateLiteralFilter(qb, 'start_date', '<=', today);
+            applyNullSafeDateLiteralFilter(qb, 'end_date', '>=', today);
+        })
         .fetchAll({ withRelated: [{ student: function (query) { query.orderBy('name'); } }] })
         .then(res => res.toJSON())
         .then(res => res.map(item => item.student));

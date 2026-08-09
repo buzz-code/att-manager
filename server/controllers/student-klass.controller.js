@@ -12,6 +12,23 @@ import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../ut
 export const { findById, store, update, destroy, uploadMultiple } = genericController(StudentKlass);
 
 /**
+ * Apply a NULL-safe date comparison against another joined table's column, so rows with a blank
+ * date column stay visible (e.g. keep a student_klasses row whose start_date/end_date is unset,
+ * when checking whether it was active on a given diary_lessons.lesson_date).
+ *
+ * `referenceColumn` is always a column identifier, never a literal value - see applyNullSafeDateLiteralFilter
+ * for comparing against a literal value instead.
+ *
+ * @param {object} qb query builder
+ * @param {string} column
+ * @param {'<='|'>='} operator
+ * @param {string} referenceColumn e.g. 'diary_lessons.lesson_date'
+ */
+export function applyNullSafeDateColumnFilter(qb, column, operator, referenceColumn) {
+    qb.whereRaw(`(?? IS NULL OR ?? ${operator} ??)`, [column, column, referenceColumn]);
+}
+
+/**
  * Apply a NULL-safe date comparison against a literal date value.
  *
  * @param {object} qb query builder
