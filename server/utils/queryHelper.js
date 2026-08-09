@@ -8,7 +8,7 @@ import Lesson from "../models/lesson.model";
 import Group from "../models/group.model";
 import Diary, { DiaryInstance } from "../models/diary.model";
 import { getDaysByLessonCount } from "../../common-modules/server/utils/diary";
-import { applyNullSafeDateLiteralFilter } from "../controllers/student-klass.controller";
+import { applyNullSafeDateLiteralFilter } from "./studentKlassDateFilters";
 
 export function getUserByPhone(phone_number) {
     return new User().where({ phone_number })
