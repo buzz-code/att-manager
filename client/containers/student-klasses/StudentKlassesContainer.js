@@ -73,6 +73,7 @@ const getFilters = ({ studentsByYear, klasses }) => [
     label: 'נכון לתאריך',
     type: 'date',
     operator: 'eq',
+    defaultValue: today(),
   },
 ];
 const getActions = (handleOpenSwitchKlass) => [
