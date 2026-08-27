@@ -29,6 +29,7 @@ const addDiaryMetadataToTemplateData = async (templateData, title, diaryDate) =>
         templateData.title = title + '- ' + getHebJewishMonthById(heDate.monthName) + ' ' + convertToHebrew(heDate.year);
     }
     await addCommonMetadataToTemplateData(templateData);
+    templateData.logoImg = 'data:image;base64,' + await fs.promises.readFile(path.join(constant.assetsDir, 'img', 'header-logo.png'), { encoding: 'base64' });
 }
 
 export const getGradeFilenameFromGroup = ({ klass, teacher, lesson }, half) => `דוח ציונים ${klass?.name || ''}_${teacher?.name || ''}_${lesson?.name || ''}_מחצית_${half === 1 ? 'א' : 'ב'}`;
