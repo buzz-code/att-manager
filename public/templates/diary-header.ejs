@@ -1,0 +1,29 @@
+<style>
+    .diary-header {
+        position: relative;
+        text-align: center;
+        min-height: 50px;
+    }
+    .diary-header img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 50px;
+        width: auto;
+    }
+    .diary-header small {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+    .diary-header h2 {
+        margin: 0;
+        line-height: 50px;
+    }
+</style>
+
+<div class="diary-header">
+    <img src="<%= logoImg %>" alt="לוגו" />
+    <small>בס"ד</small>
+    <h2><%= title %></h2>
+</div>
