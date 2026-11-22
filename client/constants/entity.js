@@ -4,6 +4,7 @@ export const STUDENTS = 'students';
 export const LESSONS = 'lessons';
 export const KLASSS = 'klasses';
 export const STUDENT_KLASSES = 'student-klasses';
+export const LESSON_EXCLUDED_STUDENTS = 'lesson-excluded-students';
 export const GROUPS = 'groups';
 export const DIARIES = 'diaries';
 export const ATT_TYPES = 'att-types';

@@ -37,7 +37,7 @@ export class YemotCall extends CallBase {
             }
             const klass = await this.getKlass(teacher);
             const lesson = await this.getLesson();
-            await this.getStudentReports(klass);
+            await this.getStudentReports(klass, lesson);
             try {
                 const baseReport = {
                     user_id: this.user.id,
@@ -119,8 +119,8 @@ export class YemotCall extends CallBase {
         return lesson;
     }
 
-    async getStudentReports(klass) {
-        const students = await queryHelper.getStudentsByUserIdAndKlassIdAndYear(this.user.id, klass.id, defaultYear);
+    async getStudentReports(klass, lesson) {
+        const students = await queryHelper.getStudentsByUserIdAndKlassIdAndYear(this.user.id, klass.id, defaultYear, lesson.key);
         const types = await queryHelper.getAttTypesForTeacherByUserId(this.user.id);
         const attTypeMessage = types.map(item => format(this.texts.forAttendanceTypeXPressY, item.name, item.key)).join(', ');
         const prevStudentMessage = format(this.texts.forAttendanceTypeXPressY, this.texts.prevStudent, 7);

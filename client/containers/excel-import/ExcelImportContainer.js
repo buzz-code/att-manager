@@ -37,6 +37,11 @@ const supportedEntities = [
     columns: ['student_tz', 'klass_id', 'year', 'start_date', 'end_date'],
   },
   {
+    value: entities.LESSON_EXCLUDED_STUDENTS,
+    title: titles.LESSON_EXCLUDED_STUDENTS,
+    columns: ['student_tz', 'lesson_id', 'year'],
+  },
+  {
     value: entities.GROUPS,
     title: titles.GROUPS,
     columns: ['klass_id', 'teacher_id', 'lesson_id', 'day_count', 'lesson_count', 'year'],
