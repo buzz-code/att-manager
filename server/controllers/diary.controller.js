@@ -18,10 +18,12 @@ import StudentByYear from '../models/student-by-year.model';
 import { KLASS_TYPE_BASE, KLASS_TYPE_MAASIT, KLASS_TYPE_SPECIALITY } from '../utils/klassHelper';
 import KlassType from '../models/klass-type.model';
 import { applyNullSafeDateColumnFilter } from '../utils/studentKlassDateFilters';
+import { applyNotExcludedFromLessonFilter } from '../utils/lessonExcludedStudents';
 
 /**
  * Keep only the joined student_klasses row(s) that were active on the given lesson's date,
- * treating a blank start_date/end_date as an open-ended range.
+ * treating a blank start_date/end_date as an open-ended range, and drop students who don't
+ * study the group's lesson (lesson_excluded_students).
  *
  * @param {object} qb query builder
  * @param {string} lessonDateColumn e.g. 'diary_lessons.lesson_date'
@@ -29,6 +31,7 @@ import { applyNullSafeDateColumnFilter } from '../utils/studentKlassDateFilters'
 function applyActiveStudentKlassFilter(qb, lessonDateColumn) {
     applyNullSafeDateColumnFilter(qb, 'student_klasses.start_date', '<=', lessonDateColumn);
     applyNullSafeDateColumnFilter(qb, 'student_klasses.end_date', '>=', lessonDateColumn);
+    applyNotExcludedFromLessonFilter(qb, 'student_klasses.user_id', 'student_klasses.student_tz', 'groups.lesson_id', 'groups.year');
 }
 
 export const { findById, store, update, destroy, uploadMultiple } = genericController(Diary);

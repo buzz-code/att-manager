@@ -34,12 +34,19 @@ export function getLessonByUserIdAndLessonId(user_id, key) {
         .then(res => res ? res.toJSON() : null);
 }
 
-export function getStudentsByUserIdAndKlassIdAndYear(user_id, klass_id, year) {
+// lesson_id (optional): leave out students who don't study this lesson
+export function getStudentsByUserIdAndKlassIdAndYear(user_id, klass_id, year, lesson_id) {
     const today = moment().format('YYYY-MM-DD');
     return new StudentKlass().where({ user_id, klass_id, year })
         .query(qb => {
             applyNullSafeDateLiteralFilter(qb, 'start_date', '<=', today);
             applyNullSafeDateLiteralFilter(qb, 'end_date', '>=', today);
+            if (lesson_id !== undefined && lesson_id !== null) {
+                qb.whereRaw(
+                    'NOT EXISTS (SELECT 1 FROM lesson_excluded_students les WHERE les.user_id = student_klasses.user_id AND les.student_tz = student_klasses.student_tz AND les.lesson_id = ? AND les.year = student_klasses.year)',
+                    [lesson_id]
+                );
+            }
         })
         .fetchAll({ withRelated: [{ student: function (query) { query.orderBy('name'); } }] })
         .then(res => res.toJSON())
@@ -74,7 +81,7 @@ export async function getDiaryDataByGroupId(group_id) {
     const group = await new Group().where({ id: group_id })
         .fetch({ withRelated: ['klass', 'teacher', 'lesson'] })
         .then(res => res.toJSON());
-    const students = await getStudentsByUserIdAndKlassIdAndYear(group.user_id, group.klass_id, group.year);
+    const students = await getStudentsByUserIdAndKlassIdAndYear(group.user_id, group.klass_id, group.year, group.lesson_id);
     const days = getDaysByLessonCount(group.day_count, group.lesson_count);
 
     return {

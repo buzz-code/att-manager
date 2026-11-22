@@ -27,6 +27,7 @@ import Students from '../containers/students/StudentsContainer';
 import Lessons from '../containers/lessons/LessonsContainer';
 import Klasses from '../containers/klasses/KlassesContainer';
 import StudentKlasses from '../containers/student-klasses/StudentKlassesContainer';
+import LessonExcludedStudents from '../containers/lesson-excluded-students/LessonExcludedStudentsContainer';
 import Groups from '../containers/groups/GroupsContainer';
 import Diaries from '../containers/diaries/DiariesContainer';
 import AttTypes from '../containers/att-types/AttTypesContainer';
@@ -90,6 +91,13 @@ export default [
       icon: GroupWorkIcon,
       title: titles.STUDENT_KLASSES,
       props: { entity: entities.STUDENT_KLASSES, title: titles.STUDENT_KLASSES },
+    },
+    {
+      path: '/lesson-excluded-students',
+      component: LessonExcludedStudents,
+      icon: GroupWorkIcon,
+      title: titles.LESSON_EXCLUDED_STUDENTS,
+      props: { entity: entities.LESSON_EXCLUDED_STUDENTS, title: titles.LESSON_EXCLUDED_STUDENTS },
     },
     {
       path: '/groups',
